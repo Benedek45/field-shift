@@ -1,0 +1,144 @@
+<template>
+  <style>
+    #root {
+      position: absolute;
+      inset: 0;
+      background: var(--ground);
+      font-family: var(--font-display);
+      color: var(--ink);
+    }
+    #q-card {
+      position: absolute;
+      left: 230px;
+      top: 150px;
+      width: 1460px;
+      height: 612px;
+      border-radius: 18px;
+      overflow: hidden;
+      background: var(--paper);
+      border: 2px solid var(--line);
+      box-shadow: 0 24px 60px rgba(23, 36, 27, 0.16);
+    }
+    #q-img {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 1460px;
+      height: auto;
+      display: block;
+    }
+    .q-head {
+      position: absolute;
+      left: 230px;
+      top: 58px;
+      width: 1460px;
+      font-size: 40px;
+      font-weight: 800;
+      letter-spacing: -0.01em;
+      white-space: nowrap;
+    }
+    #q-list {
+      position: absolute;
+      left: 230px;
+      top: 150px;
+      width: 1460px;
+    }
+    .q-row {
+      display: flex;
+      align-items: center;
+      gap: 30px;
+      margin-bottom: 26px;
+      padding: 26px 34px;
+      background: var(--paper);
+      border: 2px solid var(--line);
+      border-radius: 16px;
+      font-size: 40px;
+    }
+    .q-said {
+      width: 620px;
+      font-weight: 700;
+    }
+    .q-run {
+      flex: 1;
+      color: var(--muted);
+      font-weight: 600;
+    }
+    .q-run b {
+      color: var(--ink);
+    }
+    .q-tag {
+      flex: none;
+      padding: 8px 20px;
+      border-radius: 10px;
+      color: #fff;
+      font-weight: 800;
+      font-size: 34px;
+    }
+    .q-tag.fail {
+      background: #a3261c;
+    }
+    .q-tag.warn {
+      background: #8a520c;
+    }
+    .q-head em {
+      font-style: normal;
+      color: var(--green);
+    }
+    .cap {
+      position: absolute;
+      left: 230px;
+      top: 872px;
+      width: 1460px;
+      display: flex;
+      align-items: center;
+      gap: 26px;
+      font-size: 50px;
+      font-weight: 800;
+      letter-spacing: -0.01em;
+    }
+    .cap b {
+      flex: none;
+      width: 76px;
+      height: 76px;
+      border-radius: 38px;
+      background: var(--green);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 42px;
+    }
+    #q-src {
+      position: absolute;
+      left: 232px;
+      top: 976px;
+      font-size: 28px;
+      color: var(--muted);
+    }
+  </style>
+  <div id="root" data-composition-id="qa" data-width="1920" data-height="1080">
+    <div id="q-h1" class="q-head">Alfalfa? <em>about −$6/acre vs $422 now</em>, and the limit rules it out</div>
+    <div id="q-h2" class="q-head">Dry summer, −20% rain? <em>$392 vs $422</em> typical, <em>$316 vs $329</em> bad year</div>
+    <div id="q-card">
+      <img id="q-img" src="assets/shots/qa.png" alt="Two follow-up questions and the agent's answers" />
+    </div>
+    <div id="q-cap" class="cap">
+      <b>5</b><span>Then ask anything. Answers are checked too.</span>
+    </div>
+    <div id="q-src">Real screenshot · answers in 18 s and 22 s, each from new simulator runs; every $ figure checked</div>
+  </div>
+  <script>
+    const tl = gsap.timeline({ paused: true });
+    tl.fromTo("#q-card", { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.45, ease: "expo.out" }, 0);
+    tl.fromTo("#q-h1", { opacity: 0 }, { opacity: 1, duration: 0.25 }, 0.3);
+    const shot = (window.SHOTS && window.SHOTS.qa) || { width: 1140, height: 750 };
+    const travel = Math.max(0, 1460 * (shot.height / shot.width) - 612);
+    if (travel > 0) tl.fromTo("#q-img", { y: 0 }, { y: -travel, duration: 0.8, ease: "power2.inOut" }, 1.8);
+    tl.to("#q-h1", { opacity: 0, duration: 0.2 }, 1.8);
+    tl.fromTo("#q-h2", { opacity: 0 }, { opacity: 1, duration: 0.25 }, 2.0);
+    tl.fromTo("#q-cap", { opacity: 0, filter: "blur(8px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.2, ease: "power4.out" }, 0.15);
+    tl.fromTo("#q-src", { opacity: 0 }, { opacity: 1, duration: 0.3 }, 0.4);
+    tl.to("#root", { opacity: 0, duration: 0.15, ease: "power2.in" }, 3.62);
+    window.__timelines["qa"] = tl;
+  </script>
+</template>

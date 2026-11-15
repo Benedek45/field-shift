@@ -1,0 +1,134 @@
+#!/bin/sh
+# Field simulator client. Talks to the simulator service for this farm.
+set -eu
+farm="${FARMSIM_FARM:?}"
+[ -s .farmsim_farm ] && farm=$(cat .farmsim_farm)
+base="${FARMSIM_URL:?}/farm/$farm"
+auth="Authorization: Bearer ${FARMSIM_TOKEN:?}"
+# Long outputs may be shortened by the agent harness, so the call label is printed before and after,
+# and the full response is kept in .sim-response-<n>.json for the post-run checks.
+sim_call() {
+    n=$(( $(cat .farmsim_calls 2>/dev/null || echo 0) + 1 ))
+    echo "$n" > .farmsim_calls
+    echo "Simulator call sim:$n (cite these results as sim:$n)"
+    status=0
+    curl -sS -m 600 -H "$auth" -H "Content-Type: application/json" -d "$2" "$base/$1" > ".sim-response-$n.raw" || status=$?
+    cat ".sim-response-$n.raw"
+    echo
+    # Saved indented: the read tool cuts very long lines, and compact JSON is a single line.
+    if command -v jq >/dev/null 2>&1 && jq . ".sim-response-$n.raw" > ".sim-response-$n.json" 2>/dev/null; then
+        rm -f ".sim-response-$n.raw"
+    else
+        mv ".sim-response-$n.raw" ".sim-response-$n.json"
+    fi
+    echo "End of simulator call sim:$n. Full response: .sim-response-$n.json in the working directory;"
+    echo "if the output above was shortened, read that file with the read tool."
+    return "$status"
+}
+case "${2:-}" in
+    -h|--help|help) set -- help ;;
+esac
+case "${1:-help}" in
+    form)
+        [ $# -ge 2 ] || { echo 'usage: ./farmsim form '"'"'{"priorities":{"money":5}}'"'"; exit 2; }
+        curl -sS -m 600 -H "$auth" -H "Content-Type: application/json" -d "$2" "$base/form"
+        ;;
+    economics)
+        [ $# -ge 2 ] || { echo 'usage: ./farmsim economics '"'"'{"usd_per_acre_foot": 60, "crop_price_usd_t": {"corn": 210}}'"'"; exit 2; }
+        out=$(curl -sS -m 300 -H "$auth" -H "Content-Type: application/json" -d "$2" "$base/economics")
+        new=$(printf '%s' "$out" | sed -n 's/.*"farm_id": *"\([a-z]*\)".*/\1/p')
+        if [ -n "$new" ]; then
+            echo "$new" > .farmsim_farm
+            echo "Farmer economics applied. Later options, simulate and scoreboard calls use them."
+        fi
+        printf '%s' "$out"
+        ;;
+    economics-reset)
+        if [ "${FIELDSHIFT_CHAT:-0}" = 1 ]; then
+            exec ./farmsim form '{"economics":null}'
+        fi
+        rm -f .farmsim_farm
+        echo "Back to the farm's original economics."
+        ;;
+    options)
+        curl -sS -m 300 -H "$auth" "$base/options"
+        ;;
+    simulate)
+        [ $# -ge 2 ] || { echo 'usage: ./farmsim simulate '"'"'{"rotations": [[{"crop": "corn"}, {"crop": "soybean", "winter": "cereal_rye"}]]}'"'"; exit 2; }
+        sim_call simulate "$2"
+        ;;
+    scoreboard)
+        [ $# -ge 2 ] || { echo 'usage: ./farmsim scoreboard '"'"'{"weights": {"income": 5, "soil": 3}, "limits": {}}'"'"; exit 2; }
+        sim_call scoreboard "$2"
+        ;;
+    state)
+        curl -sS -m 300 -H "$auth" "$base/state"
+        ;;
+    studies)
+        [ $# -ge 2 ] || { echo 'usage: ./farmsim studies '"'"'{"query": "cereal rye nitrate leaching", "top": 5}'"'"; exit 2; }
+        sim_call studies "$2"
+        ;;
+    forecast)
+        [ $# -ge 2 ] || { echo 'usage: ./farmsim forecast '"'"'{"rotations": [[{"crop":"corn"}]], "years":1, "weather":"outlook"}'"'"; exit 2; }
+        sim_call forecast "$2"
+        ;;
+    *)
+        cat <<'EOF'
+./farmsim options
+    Crops and winter options feasible on this farm, with their traits, and the ones excluded with the reason.
+
+./farmsim form '<json patch>'
+    Chat only. Proposes a change to the farmer's form in public units, e.g.
+    {"location":{"irrigated":false},"priorities":{"preset":"steady"},"economics":{"water_usd_acre_foot":60}}.
+    Nested objects merge, lists replace, null removes a field. Nothing is applied: the chat program shows
+    the farmer the proposed values and applies them only if the farmer's next message confirms.
+
+./farmsim studies '<json>'
+    <json> = {"query": "words", "crops": ["corn"], "topics": ["nitrate leaching"], "top": 5}
+    Searches the fixed study library in evidence/ (never the web). Returns ranked cards with the best
+    matching Findings / Conditions lines as snippets and farm_fit = close / partial / far with reasons
+    (region, climate, soil compared with this farm). crops/topics are optional filters; top is 1-15.
+    Snippets are not enough to cite a study: open evidence/<id>.md with the read tool first.
+
+./farmsim state
+    Historical state ensemble, its as-of date, SMAP update diagnostics and model-only limitations.
+./farmsim forecast '<json>'
+    <json> = {"rotations": [ROTATION, ...], "years": 1, "weather": "outlook"}
+    Conditional 1–4 year distributions from that state, compared with climatology.
+    Check the state date: an unobserved weather gap is climate-bridged, NOT measured.
+
+./farmsim simulate '<json>'
+    <json> = {"rotations": [ROTATION, ...], "rain_change_pct": 0, "temp_change_c": 0}
+    ROTATION = a repeating cycle of 1 to 6 years: [{"crop": "<key>", "winter": "<key or omitted>"}, ...]
+    At most 12 rotations per call. rain_change_pct and temp_change_c are optional what-if changes.
+    Returns, for each rotation and for the existing rotation, the median and the 10th to 90th
+    percentile over historical weather years: income, yield relative to normal, water use,
+    nitrate loss, erosion, organic-matter trend, days without living cover, and warnings.
+
+./farmsim scoreboard '<json>'
+    <json> = {"weights": {"income": w, "water": w, "soil": w, "nitrogen": w, "erosion": w, "cover": w,
+              "forage": w, "resilience": w, "market": w}, "limits": {...}, "rain_change_pct": 0,
+              "temp_change_c": 0, "top": 15}
+    Scores every feasible rotation cycle on this farm with your weights (missing keys count 0) after
+    the hard limits, and returns them ranked, with the existing rotation's rank. tied_with_best = the
+    lead of the best cycle over this one is within weather noise. ./farmsim options explains each weight.
+    limits (all optional): min_margin_share_of_existing (0-1), max_nitrate_kg_n_ha_yr,
+    max_field_water_use_mm_yr, max_erosion_t_ha_yr, max_days_without_living_cover_yr,
+    require_crops [..], exclude_crops [..], require_winter_cover, no_new_equipment, keep_forage_crop.
+
+./farmsim economics '<json>'
+    Applies prices or costs the farmer stated (labelled "farmer" in later results). Keys are listed
+    under the economics items in ./farmsim options, e.g. labour_usd_hr, fertilizer_n_usd_kg,
+    usd_per_acre_foot or water_charge_usd_per_mm_ha, irrigation_energy_usd_per_mm_ha,
+    irrigation_capacity_mm_yr, cover_seed_usd_ha, land_rent_usd_ha,
+    crop_price_usd_t {"crop": USD per t}, crop_cost_usd_ha {"crop": {"part": USD per ha}}.
+    Edits add up over calls. All later options, simulate and scoreboard calls use them.
+./farmsim economics-reset
+    Returns to the farm's original economics.
+
+Example:
+    ./farmsim simulate '{"rotations": [[{"crop": "corn"}, {"crop": "soybean"}], [{"crop": "corn", "winter": "cereal_rye"}, {"crop": "soybean"}]]}'
+EOF
+        ;;
+esac
+echo

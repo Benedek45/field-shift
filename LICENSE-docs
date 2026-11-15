@@ -1,0 +1,17 @@
+Field Shift documentation, study-card summaries, benchmark tasks and results
+Copyright (c) 2026 Benedek45
+
+Licensed under the Creative Commons Attribution 4.0 International licence
+(CC BY 4.0): https://creativecommons.org/licenses/by/4.0/
+
+Covered: the written text of this repository (README.md, AGENTS.md, EXPERIMENTS.md,
+bench/*.md, bench/paper/, vm/agents/*.md, examples/), the summaries, fit notes and
+other text written for this project in data/evidence/cards/*.md, the benchmark tasks
+(bench/tasks.json) and the reported results.
+
+Not covered: passages quoted from published studies inside data/evidence/cards/*.md
+(the "## Quotes" sections and any other quoted text, with the source in the card header). They remain the work of their original
+authors and publishers and are used here as short quotations for reference.
+
+Source code is licensed separately under the MIT licence (LICENSE). Third-party data
+keep their own terms; see "Licence and data credits" in README.md.

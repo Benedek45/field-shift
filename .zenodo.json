@@ -1,0 +1,31 @@
+{
+  "title": "Field Shift B0: a planted-answer benchmark for farm-advisor agents with a decision tool (v0.5.0, preliminary)",
+  "upload_type": "software",
+  "version": "0.5.0",
+  "publication_date": "2026-11-15",
+  "access_right": "open",
+  "license": "MIT",
+  "creators": [
+    {
+      "name": "Benedek45"
+    }
+  ],
+  "description": "<p><strong>Preliminary release (v0.5.0).</strong> One repeat of three was run. Number-grounding scorer v2 was added post hoc. All episodes used prompt v1. Keys come from our own simulator (fieldshift-v25), not from field truth. Full results (three repeats, prompt v2, hidden test split) are planned for v1.0.</p><p>B0 tests whether an agent with a crop-rotation decision tool finds a decisive fact in a farm brief and uses it. There are 35 control/planted twin pairs in six families: hidden limit, quoted price, field fact, priority order, infeasible request and missing data. The release contains the method (bench/README.md), registered contracts and logs (bench/EXPERIMENTS.md), the public dev tasks (bench/tasks.json), the generator and scorer (src/fieldshift/bench), and preliminary results (bench/RESULTS_v0.5.md, data/processed/bench/b0_partial.json).</p><p>Evaluated models (OpenCode 2.3.0): anthropic/claude-opus-5-5 (Claude subscription), opencode-go/gpt-6-luna, opencode-go/glm-5.3-flash, opencode-go/deepseek-v4.1-flash (OpenCode Go plan).</p>",
+  "notes": "AI-use disclosure (NASA Space Apps 2026 rules require AI-generated code and data to be acknowledged in descriptive text and metadata): the code, task generator, scorer and documentation were written with AI coding agents in OpenCode, mainly Anthropic Claude Opus 5.5 and OpenAI GPT-6 Luna, under the team's direction and review. The project idea and the benchmark question are the team's. The planted task sentences come from fixed templates written with those agents. The keys are outputs of the Field Shift simulator, not of a language model. The four models named in the description are evaluated subjects, not authors. Data attributions and licences: bench/LICENSES_AUDIT.md. Licences: code MIT (LICENSE); text, study-card summaries, tasks and results CC BY 4.0 (LICENSE-docs); quoted passages in study cards remain their authors'.",
+  "keywords": [
+    "benchmark",
+    "LLM agents",
+    "tool use",
+    "crop rotation",
+    "decision support",
+    "NASA POWER",
+    "NASA Space Apps 2026"
+  ],
+  "related_identifiers": [
+    {
+      "identifier": "https://github.com/Benedek45/field-shift",
+      "relation": "isSupplementTo",
+      "resource_type": "software"
+    }
+  ]
+}

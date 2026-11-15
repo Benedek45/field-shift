@@ -1,0 +1,7 @@
+# Five farmer turns for `uv run python -m fieldshift.agent.chat --script examples/chats/story.txt`.
+# Story County, IA is rainfed, so the water price in turn 5 should be recognised as irrelevant.
+Hi, my farm is in Story County, Iowa.
+It's not irrigated. We grow corn one year and soybeans the next. I want steady income and good protection in bad years. I can't buy any new machinery. I don't know my own costs, so use your regional numbers, and use the past weather.
+Yes, that's right.
+What if next summer is 30% drier?
+My water is free and I can get $5 more per ton for corn; does that change it?

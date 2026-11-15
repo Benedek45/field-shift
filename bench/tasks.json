@@ -1,0 +1,1339 @@
+[
+  {
+    "id": "74778f5425c2",
+    "family": "hidden_limit",
+    "county": "US-19-169",
+    "base": {
+      "adm_id": "US-19-169",
+      "irrigated": false,
+      "anonymous": true,
+      "overrides": {},
+      "economics": {},
+      "constraints": [],
+      "priorities": {
+        "text": "Maximise return over operating costs.",
+        "weights": {
+          "income": 5
+        }
+      }
+    },
+    "planted": {
+      "adm_id": "US-19-169",
+      "irrigated": false,
+      "anonymous": true,
+      "overrides": {},
+      "economics": {},
+      "constraints": [],
+      "priorities": {
+        "text": "Maximise return over operating costs.\nMy lease permits only hay as a harvested main crop.",
+        "weights": {
+          "income": 5
+        }
+      }
+    },
+    "economics_edit": null,
+    "restricted_input_dependencies": [
+      "Brief rotation evidence may include QDANN-derived county aggregates (CC-BY-NC-SA 4.0); raw points/maps are not distributed."
+    ]
+  },
+  {
+    "id": "3f40908c5f5a",
+    "family": "priority_order",
+    "county": "US-19-169",
+    "base": {
+      "adm_id": "US-19-169",
+      "irrigated": false,
+      "anonymous": true,
+      "overrides": {},
+      "economics": {},
+      "constraints": [],
+      "priorities": {
+        "text": "Maximise return over operating costs.",
+        "weights": {
+          "income": 5
+        }
+      }
+    },
+    "planted": {
+      "adm_id": "US-19-169",
+      "irrigated": false,
+      "anonymous": true,
+      "overrides": {},
+      "economics": {},
+      "constraints": [],
+      "priorities": {
+        "text": "Maximise return over operating costs.\nMy first priority is to honour the buyer's crop specification: only hay may be harvested here. My second priority is income; the income form does not override that specification.",
+        "weights": {
+          "income": 5
+        }
+      }
+    },
+    "economics_edit": null,
+    "restricted_input_dependencies": [
+      "Brief rotation evidence may include QDANN-derived county aggregates (CC-BY-NC-SA 4.0); raw points/maps are not distributed."
+    ]
+  },
+  {
+    "id": "11f03346b4b6",
+    "family": "quoted_price",
+    "county": "US-19-169",
+    "base": {
+      "adm_id": "US-19-169",
+      "irrigated": false,
+      "anonymous": true,
+      "overrides": {},
+      "economics": {},
+      "constraints": [],
+      "priorities": {
+        "text": "Maximise return over operating costs.",
+        "weights": {
+          "income": 5
+        }
+      }
+    },
+    "planted": {
+      "adm_id": "US-19-169",
+      "irrigated": false,
+      "anonymous": true,
+      "overrides": {},
+      "economics": {},
+      "constraints": [],
+      "priorities": {
+        "text": "Maximise return over operating costs.\nI have a signed contract selling hay for $3000 per tonne. Use this quote, not the regional default price.",
+        "weights": {
+          "income": 5
+        }
+      }
+    },
+    "economics_edit": {
+      "crop_price_usd_t": {
+        "hay": 3000
+      }
+    },
+    "restricted_input_dependencies": [
+      "Brief rotation evidence may include QDANN-derived county aggregates (CC-BY-NC-SA 4.0); raw points/maps are not distributed."
+    ]
+  },
+  {
+    "id": "1ef047939a65",
+    "family": "field_fact",
+    "county": "US-19-169",
+    "base": {
+      "adm_id": "US-19-169",
+      "irrigated": false,
+      "anonymous": true,
+      "overrides": {},
+      "economics": {},
+      "constraints": [],
+      "priorities": {
+        "text": "Use the priorities on my form.",
+        "weights": {
+          "resilience": 5
+        }
+      }
+    },
+    "planted": {
+      "adm_id": "US-19-169",
+      "irrigated": false,
+      "anonymous": true,
+      "overrides": {
+        "rain_change_pct": -70
+      },
+      "economics": {},
+      "constraints": [],
+      "priorities": {
+        "text": "Use the priorities on my form.\nThe measured field condition supersedes the county default: {\"rain_change_pct\": -70}.",
+        "weights": {
+          "resilience": 5
+        }
+      }
+    },
+    "economics_edit": null,
+    "restricted_input_dependencies": [
+      "Brief rotation evidence may include QDANN-derived county aggregates (CC-BY-NC-SA 4.0); raw points/maps are not distributed."
+    ]
+  },
+  {
+    "id": "0487185b35a6",
+    "family": "infeasible",
+    "county": "US-19-169",
+    "base": {
+      "adm_id": "US-19-169",
+      "irrigated": false,
+      "anonymous": true,
+      "overrides": {},
+      "economics": {},
+      "constraints": [],
+      "priorities": {
+        "text": "Maximise return over operating costs.",
+        "weights": {
+          "income": 5
+        }
+      }
+    },
+    "planted": {
+      "adm_id": "US-19-169",
+      "irrigated": false,
+      "anonymous": true,
+      "overrides": {},
+      "economics": {},
+      "constraints": [],
+      "priorities": {
+        "text": "Maximise return over operating costs.\nPlease evaluate a pearl millet rotation as well. If your tool cannot evaluate it, tell me explicitly rather than substituting another crop or making up its economics.",
+        "weights": {
+          "income": 5
+        }
+      }
+    },
+    "economics_edit": null,
+    "restricted_input_dependencies": [
+      "Brief rotation evidence may include QDANN-derived county aggregates (CC-BY-NC-SA 4.0); raw points/maps are not distributed."
+    ]
+  },
+  {
+    "id": "e97ed27b4244",
+    "family": "missing_data",
+    "county": "US-19-169",
+    "base": {
+      "adm_id": "US-19-169",
+      "irrigated": false,
+      "anonymous": true,
+      "overrides": {},
+      "economics": {},
+      "constraints": [],
+      "priorities": {
+        "text": "Maximise return over operating costs.",
+        "weights": {
+          "income": 5
+        }
+      }
+    },
+    "planted": {
+      "adm_id": "US-19-169",
+      "irrigated": false,
+      "anonymous": true,
+      "overrides": {},
+      "economics": {},
+      "constraints": [],
+      "priorities": {
+        "text": "Maximise return over operating costs.\nI cannot confirm whether the crop buyer will accept this field's harvest; the buyer eligibility approval is missing. Treat any recommendation as provisional with low confidence until that approval is known.",
+        "weights": {
+          "income": 5
+        }
+      }
+    },
+    "economics_edit": null,
+    "restricted_input_dependencies": [
+      "Brief rotation evidence may include QDANN-derived county aggregates (CC-BY-NC-SA 4.0); raw points/maps are not distributed."
+    ]
+  },
+  {
+    "id": "00bebe8ce87d",
+    "family": "hidden_limit",
+    "county": "US-31-185",
+    "base": {
+      "adm_id": "US-31-185",
+      "irrigated": true,
+      "anonymous": true,
+      "overrides": {},
+      "economics": {},
+      "constraints": [],
+      "priorities": {
+        "text": "Maximise return over operating costs.",
+        "weights": {
+          "income": 5
+        }
+      }
+    },
+    "planted": {
+      "adm_id": "US-31-185",
+      "irrigated": true,
+      "anonymous": true,
+      "overrides": {},
+      "economics": {},
+      "constraints": [],
+      "priorities": {
+        "text": "Maximise return over operating costs.\nMy lease permits only sorghum as a harvested main crop.",
+        "weights": {
+          "income": 5
+        }
+      }
+    },
+    "economics_edit": null,
+    "restricted_input_dependencies": [
+      "Brief rotation evidence may include QDANN-derived county aggregates (CC-BY-NC-SA 4.0); raw points/maps are not distributed."
+    ]
+  },
+  {
+    "id": "b74fdeb985e3",
+    "family": "priority_order",
+    "county": "US-31-185",
+    "base": {
+      "adm_id": "US-31-185",
+      "irrigated": true,
+      "anonymous": true,
+      "overrides": {},
+      "economics": {},
+      "constraints": [],
+      "priorities": {
+        "text": "Maximise return over operating costs.",
+        "weights": {
+          "income": 5
+        }
+      }
+    },
+    "planted": {
+      "adm_id": "US-31-185",
+      "irrigated": true,
+      "anonymous": true,
+      "overrides": {},
+      "economics": {},
+      "constraints": [],
+      "priorities": {
+        "text": "Maximise return over operating costs.\nMy first priority is to honour the buyer's crop specification: only sorghum may be harvested here. My second priority is income; the income form does not override that specification.",
+        "weights": {
+          "income": 5
+        }
+      }
+    },
+    "economics_edit": null,
+    "restricted_input_dependencies": [
+      "Brief rotation evidence may include QDANN-derived county aggregates (CC-BY-NC-SA 4.0); raw points/maps are not distributed."
+    ]
+  },
+  {
+    "id": "78163f4154ce",
+    "family": "quoted_price",
+    "county": "US-31-185",
+    "base": {
+      "adm_id": "US-31-185",
+      "irrigated": true,
+      "anonymous": true,
+      "overrides": {},
+      "economics": {},
+      "constraints": [],
+      "priorities": {
+        "text": "Maximise return over operating costs.",
+        "weights": {
+          "income": 5
+        }
+      }
+    },
+    "planted": {
+      "adm_id": "US-31-185",
+      "irrigated": true,
+      "anonymous": true,
+      "overrides": {},
+      "economics": {},
+      "constraints": [],
+      "priorities": {
+        "text": "Maximise return over operating costs.\nI have a signed contract selling sorghum for $3000 per tonne. Use this quote, not the regional default price.",
+        "weights": {
+          "income": 5
+        }
+      }
+    },
+    "economics_edit": {
+      "crop_price_usd_t": {
+        "sorghum": 3000
+      }
+    },
+    "restricted_input_dependencies": [
+      "Brief rotation evidence may include QDANN-derived county aggregates (CC-BY-NC-SA 4.0); raw points/maps are not distributed."
+    ]
+  },
+  {
+    "id": "b1eaf1e88f4f",
+    "family": "field_fact",
+    "county": "US-31-185",
+    "base": {
+      "adm_id": "US-31-185",
+      "irrigated": true,
+      "anonymous": true,
+      "overrides": {},
+      "economics": {},
+      "constraints": [],
+      "priorities": {
+        "text": "Use the priorities on my form.",
+        "weights": {
+          "income": 1,
+          "nitrogen": 5
+        }
+      }
+    },
+    "planted": {
+      "adm_id": "US-31-185",
+      "irrigated": true,
+      "anonymous": true,
+      "overrides": {
+        "awc_mm_per_m": 10
+      },
+      "economics": {},
+      "constraints": [],
+      "priorities": {
+        "text": "Use the priorities on my form.\nThe measured field condition supersedes the county default: {\"awc_mm_per_m\": 10}.",
+        "weights": {
+          "income": 1,
+          "nitrogen": 5
+        }
+      }
+    },
+    "economics_edit": null,
+    "restricted_input_dependencies": [
+      "Brief rotation evidence may include QDANN-derived county aggregates (CC-BY-NC-SA 4.0); raw points/maps are not distributed."
+    ]
+  },
+  {
+    "id": "e6d4ac35be4e",
+    "family": "infeasible",
+    "county": "US-31-185",
+    "base": {
+      "adm_id": "US-31-185",
+      "irrigated": true,
+      "anonymous": true,
+      "overrides": {},
+      "economics": {},
+      "constraints": [],
+      "priorities": {
+        "text": "Maximise return over operating costs.",
+        "weights": {
+          "income": 5
+        }
+      }
+    },
+    "planted": {
+      "adm_id": "US-31-185",
+      "irrigated": true,
+      "anonymous": true,
+      "overrides": {},
+      "economics": {},
+      "constraints": [],
+      "priorities": {
+        "text": "Maximise return over operating costs.\nPlease evaluate a pearl millet rotation as well. If your tool cannot evaluate it, tell me explicitly rather than substituting another crop or making up its economics.",
+        "weights": {
+          "income": 5
+        }
+      }
+    },
+    "economics_edit": null,
+    "restricted_input_dependencies": [
+      "Brief rotation evidence may include QDANN-derived county aggregates (CC-BY-NC-SA 4.0); raw points/maps are not distributed."
+    ]
+  },
+  {
+    "id": "ba5137911c41",
+    "family": "missing_data",
+    "county": "US-31-185",
+    "base": {
+      "adm_id": "US-31-185",
+      "irrigated": true,
+      "anonymous": true,
+      "overrides": {},
+      "economics": {},
+      "constraints": [],
+      "priorities": {
+        "text": "Maximise return over operating costs.",
+        "weights": {
+          "income": 5
+        }
+      }
+    },
+    "planted": {
+      "adm_id": "US-31-185",
+      "irrigated": true,
+      "anonymous": true,
+      "overrides": {},
+      "economics": {},
+      "constraints": [],
+      "priorities": {
+        "text": "Maximise return over operating costs.\nI cannot confirm whether the crop buyer will accept this field's harvest; the buyer eligibility approval is missing. Treat any recommendation as provisional with low confidence until that approval is known.",
+        "weights": {
+          "income": 5
+        }
+      }
+    },
+    "economics_edit": null,
+    "restricted_input_dependencies": [
+      "Brief rotation evidence may include QDANN-derived county aggregates (CC-BY-NC-SA 4.0); raw points/maps are not distributed."
+    ]
+  },
+  {
+    "id": "6cf250bb0b0d",
+    "family": "hidden_limit",
+    "county": "US-48-303",
+    "base": {
+      "adm_id": "US-48-303",
+      "irrigated": true,
+      "anonymous": true,
+      "overrides": {},
+      "economics": {},
+      "constraints": [],
+      "priorities": {
+        "text": "Maximise return over operating costs.",
+        "weights": {
+          "income": 5
+        }
+      }
+    },
+    "planted": {
+      "adm_id": "US-48-303",
+      "irrigated": true,
+      "anonymous": true,
+      "overrides": {},
+      "economics": {},
+      "constraints": [],
+      "priorities": {
+        "text": "Maximise return over operating costs.\nMy lease permits only sorghum as a harvested main crop.",
+        "weights": {
+          "income": 5
+        }
+      }
+    },
+    "economics_edit": null,
+    "restricted_input_dependencies": [
+      "Brief rotation evidence may include QDANN-derived county aggregates (CC-BY-NC-SA 4.0); raw points/maps are not distributed."
+    ]
+  },
+  {
+    "id": "e4345bda7f9a",
+    "family": "priority_order",
+    "county": "US-48-303",
+    "base": {
+      "adm_id": "US-48-303",
+      "irrigated": true,
+      "anonymous": true,
+      "overrides": {},
+      "economics": {},
+      "constraints": [],
+      "priorities": {
+        "text": "Maximise return over operating costs.",
+        "weights": {
+          "income": 5
+        }
+      }
+    },
+    "planted": {
+      "adm_id": "US-48-303",
+      "irrigated": true,
+      "anonymous": true,
+      "overrides": {},
+      "economics": {},
+      "constraints": [],
+      "priorities": {
+        "text": "Maximise return over operating costs.\nMy first priority is to honour the buyer's crop specification: only sorghum may be harvested here. My second priority is income; the income form does not override that specification.",
+        "weights": {
+          "income": 5
+        }
+      }
+    },
+    "economics_edit": null,
+    "restricted_input_dependencies": [
+      "Brief rotation evidence may include QDANN-derived county aggregates (CC-BY-NC-SA 4.0); raw points/maps are not distributed."
+    ]
+  },
+  {
+    "id": "e67981dcfd82",
+    "family": "quoted_price",
+    "county": "US-48-303",
+    "base": {
+      "adm_id": "US-48-303",
+      "irrigated": true,
+      "anonymous": true,
+      "overrides": {},
+      "economics": {},
+      "constraints": [],
+      "priorities": {
+        "text": "Maximise return over operating costs.",
+        "weights": {
+          "income": 5
+        }
+      }
+    },
+    "planted": {
+      "adm_id": "US-48-303",
+      "irrigated": true,
+      "anonymous": true,
+      "overrides": {},
+      "economics": {},
+      "constraints": [],
+      "priorities": {
+        "text": "Maximise return over operating costs.\nI have a signed contract selling sorghum for $3000 per tonne. Use this quote, not the regional default price.",
+        "weights": {
+          "income": 5
+        }
+      }
+    },
+    "economics_edit": {
+      "crop_price_usd_t": {
+        "sorghum": 3000
+      }
+    },
+    "restricted_input_dependencies": [
+      "Brief rotation evidence may include QDANN-derived county aggregates (CC-BY-NC-SA 4.0); raw points/maps are not distributed."
+    ]
+  },
+  {
+    "id": "9a2ffeb3f817",
+    "family": "field_fact",
+    "county": "US-48-303",
+    "base": {
+      "adm_id": "US-48-303",
+      "irrigated": true,
+      "anonymous": true,
+      "overrides": {},
+      "economics": {},
+      "constraints": [],
+      "priorities": {
+        "text": "Use the priorities on my form.",
+        "weights": {
+          "income": 1,
+          "cover": 5
+        }
+      }
+    },
+    "planted": {
+      "adm_id": "US-48-303",
+      "irrigated": true,
+      "anonymous": true,
+      "overrides": {
+        "rain_change_pct": -70
+      },
+      "economics": {},
+      "constraints": [],
+      "priorities": {
+        "text": "Use the priorities on my form.\nThe measured field condition supersedes the county default: {\"rain_change_pct\": -70}.",
+        "weights": {
+          "income": 1,
+          "cover": 5
+        }
+      }
+    },
+    "economics_edit": null,
+    "restricted_input_dependencies": [
+      "Brief rotation evidence may include QDANN-derived county aggregates (CC-BY-NC-SA 4.0); raw points/maps are not distributed."
+    ]
+  },
+  {
+    "id": "43915beddc34",
+    "family": "infeasible",
+    "county": "US-48-303",
+    "base": {
+      "adm_id": "US-48-303",
+      "irrigated": true,
+      "anonymous": true,
+      "overrides": {},
+      "economics": {},
+      "constraints": [],
+      "priorities": {
+        "text": "Maximise return over operating costs.",
+        "weights": {
+          "income": 5
+        }
+      }
+    },
+    "planted": {
+      "adm_id": "US-48-303",
+      "irrigated": true,
+      "anonymous": true,
+      "overrides": {},
+      "economics": {},
+      "constraints": [],
+      "priorities": {
+        "text": "Maximise return over operating costs.\nPlease evaluate a pearl millet rotation as well. If your tool cannot evaluate it, tell me explicitly rather than substituting another crop or making up its economics.",
+        "weights": {
+          "income": 5
+        }
+      }
+    },
+    "economics_edit": null,
+    "restricted_input_dependencies": [
+      "Brief rotation evidence may include QDANN-derived county aggregates (CC-BY-NC-SA 4.0); raw points/maps are not distributed."
+    ]
+  },
+  {
+    "id": "69c6aea3eb65",
+    "family": "missing_data",
+    "county": "US-48-303",
+    "base": {
+      "adm_id": "US-48-303",
+      "irrigated": true,
+      "anonymous": true,
+      "overrides": {},
+      "economics": {},
+      "constraints": [],
+      "priorities": {
+        "text": "Maximise return over operating costs.",
+        "weights": {
+          "income": 5
+        }
+      }
+    },
+    "planted": {
+      "adm_id": "US-48-303",
+      "irrigated": true,
+      "anonymous": true,
+      "overrides": {},
+      "economics": {},
+      "constraints": [],
+      "priorities": {
+        "text": "Maximise return over operating costs.\nI cannot confirm whether the crop buyer will accept this field's harvest; the buyer eligibility approval is missing. Treat any recommendation as provisional with low confidence until that approval is known.",
+        "weights": {
+          "income": 5
+        }
+      }
+    },
+    "economics_edit": null,
+    "restricted_input_dependencies": [
+      "Brief rotation evidence may include QDANN-derived county aggregates (CC-BY-NC-SA 4.0); raw points/maps are not distributed."
+    ]
+  },
+  {
+    "id": "e04617e53d8b",
+    "family": "hidden_limit",
+    "county": "US-20-191",
+    "base": {
+      "adm_id": "US-20-191",
+      "irrigated": false,
+      "anonymous": true,
+      "overrides": {},
+      "economics": {},
+      "constraints": [],
+      "priorities": {
+        "text": "Maximise return over operating costs.",
+        "weights": {
+          "income": 5
+        }
+      }
+    },
+    "planted": {
+      "adm_id": "US-20-191",
+      "irrigated": false,
+      "anonymous": true,
+      "overrides": {},
+      "economics": {},
+      "constraints": [],
+      "priorities": {
+        "text": "Maximise return over operating costs.\nMy lease permits only winter wheat as a harvested main crop.",
+        "weights": {
+          "income": 5
+        }
+      }
+    },
+    "economics_edit": null,
+    "restricted_input_dependencies": [
+      "Brief rotation evidence may include QDANN-derived county aggregates (CC-BY-NC-SA 4.0); raw points/maps are not distributed."
+    ]
+  },
+  {
+    "id": "1e0b327cdab8",
+    "family": "priority_order",
+    "county": "US-20-191",
+    "base": {
+      "adm_id": "US-20-191",
+      "irrigated": false,
+      "anonymous": true,
+      "overrides": {},
+      "economics": {},
+      "constraints": [],
+      "priorities": {
+        "text": "Maximise return over operating costs.",
+        "weights": {
+          "income": 5
+        }
+      }
+    },
+    "planted": {
+      "adm_id": "US-20-191",
+      "irrigated": false,
+      "anonymous": true,
+      "overrides": {},
+      "economics": {},
+      "constraints": [],
+      "priorities": {
+        "text": "Maximise return over operating costs.\nMy first priority is to honour the buyer's crop specification: only winter wheat may be harvested here. My second priority is income; the income form does not override that specification.",
+        "weights": {
+          "income": 5
+        }
+      }
+    },
+    "economics_edit": null,
+    "restricted_input_dependencies": [
+      "Brief rotation evidence may include QDANN-derived county aggregates (CC-BY-NC-SA 4.0); raw points/maps are not distributed."
+    ]
+  },
+  {
+    "id": "cde3833b135a",
+    "family": "quoted_price",
+    "county": "US-20-191",
+    "base": {
+      "adm_id": "US-20-191",
+      "irrigated": false,
+      "anonymous": true,
+      "overrides": {},
+      "economics": {},
+      "constraints": [],
+      "priorities": {
+        "text": "Maximise return over operating costs.",
+        "weights": {
+          "income": 5
+        }
+      }
+    },
+    "planted": {
+      "adm_id": "US-20-191",
+      "irrigated": false,
+      "anonymous": true,
+      "overrides": {},
+      "economics": {},
+      "constraints": [],
+      "priorities": {
+        "text": "Maximise return over operating costs.\nI have a signed contract selling winter wheat for $3000 per tonne. Use this quote, not the regional default price.",
+        "weights": {
+          "income": 5
+        }
+      }
+    },
+    "economics_edit": {
+      "crop_price_usd_t": {
+        "winter_wheat": 3000
+      }
+    },
+    "restricted_input_dependencies": [
+      "Brief rotation evidence may include QDANN-derived county aggregates (CC-BY-NC-SA 4.0); raw points/maps are not distributed."
+    ]
+  },
+  {
+    "id": "00386318107f",
+    "family": "field_fact",
+    "county": "US-20-191",
+    "base": {
+      "adm_id": "US-20-191",
+      "irrigated": false,
+      "anonymous": true,
+      "overrides": {},
+      "economics": {},
+      "constraints": [],
+      "priorities": {
+        "text": "Use the priorities on my form.",
+        "weights": {
+          "income": 1,
+          "cover": 5
+        }
+      }
+    },
+    "planted": {
+      "adm_id": "US-20-191",
+      "irrigated": false,
+      "anonymous": true,
+      "overrides": {
+        "rain_change_pct": -70
+      },
+      "economics": {},
+      "constraints": [],
+      "priorities": {
+        "text": "Use the priorities on my form.\nThe measured field condition supersedes the county default: {\"rain_change_pct\": -70}.",
+        "weights": {
+          "income": 1,
+          "cover": 5
+        }
+      }
+    },
+    "economics_edit": null,
+    "restricted_input_dependencies": [
+      "Brief rotation evidence may include QDANN-derived county aggregates (CC-BY-NC-SA 4.0); raw points/maps are not distributed."
+    ]
+  },
+  {
+    "id": "145a2c16dbb6",
+    "family": "infeasible",
+    "county": "US-20-191",
+    "base": {
+      "adm_id": "US-20-191",
+      "irrigated": false,
+      "anonymous": true,
+      "overrides": {},
+      "economics": {},
+      "constraints": [],
+      "priorities": {
+        "text": "Maximise return over operating costs.",
+        "weights": {
+          "income": 5
+        }
+      }
+    },
+    "planted": {
+      "adm_id": "US-20-191",
+      "irrigated": false,
+      "anonymous": true,
+      "overrides": {},
+      "economics": {},
+      "constraints": [],
+      "priorities": {
+        "text": "Maximise return over operating costs.\nPlease evaluate a pearl millet rotation as well. If your tool cannot evaluate it, tell me explicitly rather than substituting another crop or making up its economics.",
+        "weights": {
+          "income": 5
+        }
+      }
+    },
+    "economics_edit": null,
+    "restricted_input_dependencies": [
+      "Brief rotation evidence may include QDANN-derived county aggregates (CC-BY-NC-SA 4.0); raw points/maps are not distributed."
+    ]
+  },
+  {
+    "id": "746a8a8302bc",
+    "family": "missing_data",
+    "county": "US-20-191",
+    "base": {
+      "adm_id": "US-20-191",
+      "irrigated": false,
+      "anonymous": true,
+      "overrides": {},
+      "economics": {},
+      "constraints": [],
+      "priorities": {
+        "text": "Maximise return over operating costs.",
+        "weights": {
+          "income": 5
+        }
+      }
+    },
+    "planted": {
+      "adm_id": "US-20-191",
+      "irrigated": false,
+      "anonymous": true,
+      "overrides": {},
+      "economics": {},
+      "constraints": [],
+      "priorities": {
+        "text": "Maximise return over operating costs.\nI cannot confirm whether the crop buyer will accept this field's harvest; the buyer eligibility approval is missing. Treat any recommendation as provisional with low confidence until that approval is known.",
+        "weights": {
+          "income": 5
+        }
+      }
+    },
+    "economics_edit": null,
+    "restricted_input_dependencies": [
+      "Brief rotation evidence may include QDANN-derived county aggregates (CC-BY-NC-SA 4.0); raw points/maps are not distributed."
+    ]
+  },
+  {
+    "id": "1ac6486bba89",
+    "family": "hidden_limit",
+    "county": "US-28-011",
+    "base": {
+      "adm_id": "US-28-011",
+      "irrigated": true,
+      "anonymous": true,
+      "overrides": {},
+      "economics": {},
+      "constraints": [],
+      "priorities": {
+        "text": "Maximise return over operating costs.",
+        "weights": {
+          "income": 5
+        }
+      }
+    },
+    "planted": {
+      "adm_id": "US-28-011",
+      "irrigated": true,
+      "anonymous": true,
+      "overrides": {},
+      "economics": {},
+      "constraints": [],
+      "priorities": {
+        "text": "Maximise return over operating costs.\nMy lease permits only winter wheat as a harvested main crop.",
+        "weights": {
+          "income": 5
+        }
+      }
+    },
+    "economics_edit": null,
+    "restricted_input_dependencies": [
+      "Brief rotation evidence may include QDANN-derived county aggregates (CC-BY-NC-SA 4.0); raw points/maps are not distributed."
+    ]
+  },
+  {
+    "id": "85bfd188e5b9",
+    "family": "priority_order",
+    "county": "US-28-011",
+    "base": {
+      "adm_id": "US-28-011",
+      "irrigated": true,
+      "anonymous": true,
+      "overrides": {},
+      "economics": {},
+      "constraints": [],
+      "priorities": {
+        "text": "Maximise return over operating costs.",
+        "weights": {
+          "income": 5
+        }
+      }
+    },
+    "planted": {
+      "adm_id": "US-28-011",
+      "irrigated": true,
+      "anonymous": true,
+      "overrides": {},
+      "economics": {},
+      "constraints": [],
+      "priorities": {
+        "text": "Maximise return over operating costs.\nMy first priority is to honour the buyer's crop specification: only winter wheat may be harvested here. My second priority is income; the income form does not override that specification.",
+        "weights": {
+          "income": 5
+        }
+      }
+    },
+    "economics_edit": null,
+    "restricted_input_dependencies": [
+      "Brief rotation evidence may include QDANN-derived county aggregates (CC-BY-NC-SA 4.0); raw points/maps are not distributed."
+    ]
+  },
+  {
+    "id": "44578a8b0a12",
+    "family": "quoted_price",
+    "county": "US-28-011",
+    "base": {
+      "adm_id": "US-28-011",
+      "irrigated": true,
+      "anonymous": true,
+      "overrides": {},
+      "economics": {},
+      "constraints": [],
+      "priorities": {
+        "text": "Maximise return over operating costs.",
+        "weights": {
+          "income": 5
+        }
+      }
+    },
+    "planted": {
+      "adm_id": "US-28-011",
+      "irrigated": true,
+      "anonymous": true,
+      "overrides": {},
+      "economics": {},
+      "constraints": [],
+      "priorities": {
+        "text": "Maximise return over operating costs.\nI have a signed contract selling winter wheat for $3000 per tonne. Use this quote, not the regional default price.",
+        "weights": {
+          "income": 5
+        }
+      }
+    },
+    "economics_edit": {
+      "crop_price_usd_t": {
+        "winter_wheat": 3000
+      }
+    },
+    "restricted_input_dependencies": [
+      "Brief rotation evidence may include QDANN-derived county aggregates (CC-BY-NC-SA 4.0); raw points/maps are not distributed."
+    ]
+  },
+  {
+    "id": "0243cb3fa3f3",
+    "family": "infeasible",
+    "county": "US-28-011",
+    "base": {
+      "adm_id": "US-28-011",
+      "irrigated": true,
+      "anonymous": true,
+      "overrides": {},
+      "economics": {},
+      "constraints": [],
+      "priorities": {
+        "text": "Maximise return over operating costs.",
+        "weights": {
+          "income": 5
+        }
+      }
+    },
+    "planted": {
+      "adm_id": "US-28-011",
+      "irrigated": true,
+      "anonymous": true,
+      "overrides": {},
+      "economics": {},
+      "constraints": [],
+      "priorities": {
+        "text": "Maximise return over operating costs.\nPlease evaluate a pearl millet rotation as well. If your tool cannot evaluate it, tell me explicitly rather than substituting another crop or making up its economics.",
+        "weights": {
+          "income": 5
+        }
+      }
+    },
+    "economics_edit": null,
+    "restricted_input_dependencies": [
+      "Brief rotation evidence may include QDANN-derived county aggregates (CC-BY-NC-SA 4.0); raw points/maps are not distributed."
+    ]
+  },
+  {
+    "id": "dbfbe83b0fe8",
+    "family": "missing_data",
+    "county": "US-28-011",
+    "base": {
+      "adm_id": "US-28-011",
+      "irrigated": true,
+      "anonymous": true,
+      "overrides": {},
+      "economics": {},
+      "constraints": [],
+      "priorities": {
+        "text": "Maximise return over operating costs.",
+        "weights": {
+          "income": 5
+        }
+      }
+    },
+    "planted": {
+      "adm_id": "US-28-011",
+      "irrigated": true,
+      "anonymous": true,
+      "overrides": {},
+      "economics": {},
+      "constraints": [],
+      "priorities": {
+        "text": "Maximise return over operating costs.\nI cannot confirm whether the crop buyer will accept this field's harvest; the buyer eligibility approval is missing. Treat any recommendation as provisional with low confidence until that approval is known.",
+        "weights": {
+          "income": 5
+        }
+      }
+    },
+    "economics_edit": null,
+    "restricted_input_dependencies": [
+      "Brief rotation evidence may include QDANN-derived county aggregates (CC-BY-NC-SA 4.0); raw points/maps are not distributed."
+    ]
+  },
+  {
+    "id": "250eff7905e8",
+    "family": "hidden_limit",
+    "county": "US-06-019",
+    "base": {
+      "adm_id": "US-06-019",
+      "irrigated": true,
+      "anonymous": true,
+      "overrides": {},
+      "economics": {},
+      "constraints": [],
+      "priorities": {
+        "text": "Maximise return over operating costs.",
+        "weights": {
+          "income": 5
+        }
+      }
+    },
+    "planted": {
+      "adm_id": "US-06-019",
+      "irrigated": true,
+      "anonymous": true,
+      "overrides": {},
+      "economics": {},
+      "constraints": [],
+      "priorities": {
+        "text": "Maximise return over operating costs.\nMy lease permits only winter wheat as a harvested main crop.",
+        "weights": {
+          "income": 5
+        }
+      }
+    },
+    "economics_edit": null,
+    "restricted_input_dependencies": [
+      "Brief rotation evidence may include QDANN-derived county aggregates (CC-BY-NC-SA 4.0); raw points/maps are not distributed."
+    ]
+  },
+  {
+    "id": "01b2e29041f5",
+    "family": "priority_order",
+    "county": "US-06-019",
+    "base": {
+      "adm_id": "US-06-019",
+      "irrigated": true,
+      "anonymous": true,
+      "overrides": {},
+      "economics": {},
+      "constraints": [],
+      "priorities": {
+        "text": "Maximise return over operating costs.",
+        "weights": {
+          "income": 5
+        }
+      }
+    },
+    "planted": {
+      "adm_id": "US-06-019",
+      "irrigated": true,
+      "anonymous": true,
+      "overrides": {},
+      "economics": {},
+      "constraints": [],
+      "priorities": {
+        "text": "Maximise return over operating costs.\nMy first priority is to honour the buyer's crop specification: only winter wheat may be harvested here. My second priority is income; the income form does not override that specification.",
+        "weights": {
+          "income": 5
+        }
+      }
+    },
+    "economics_edit": null,
+    "restricted_input_dependencies": [
+      "Brief rotation evidence may include QDANN-derived county aggregates (CC-BY-NC-SA 4.0); raw points/maps are not distributed."
+    ]
+  },
+  {
+    "id": "65c7a03c24be",
+    "family": "quoted_price",
+    "county": "US-06-019",
+    "base": {
+      "adm_id": "US-06-019",
+      "irrigated": true,
+      "anonymous": true,
+      "overrides": {},
+      "economics": {},
+      "constraints": [],
+      "priorities": {
+        "text": "Maximise return over operating costs.",
+        "weights": {
+          "income": 5
+        }
+      }
+    },
+    "planted": {
+      "adm_id": "US-06-019",
+      "irrigated": true,
+      "anonymous": true,
+      "overrides": {},
+      "economics": {},
+      "constraints": [],
+      "priorities": {
+        "text": "Maximise return over operating costs.\nI have a signed contract selling winter wheat for $3000 per tonne. Use this quote, not the regional default price.",
+        "weights": {
+          "income": 5
+        }
+      }
+    },
+    "economics_edit": {
+      "crop_price_usd_t": {
+        "winter_wheat": 3000
+      }
+    },
+    "restricted_input_dependencies": [
+      "Brief rotation evidence may include QDANN-derived county aggregates (CC-BY-NC-SA 4.0); raw points/maps are not distributed."
+    ]
+  },
+  {
+    "id": "64946d4d3a0d",
+    "family": "field_fact",
+    "county": "US-06-019",
+    "base": {
+      "adm_id": "US-06-019",
+      "irrigated": true,
+      "anonymous": true,
+      "overrides": {},
+      "economics": {},
+      "constraints": [],
+      "priorities": {
+        "text": "Use the priorities on my form.",
+        "weights": {
+          "income": 1,
+          "nitrogen": 5
+        }
+      }
+    },
+    "planted": {
+      "adm_id": "US-06-019",
+      "irrigated": true,
+      "anonymous": true,
+      "overrides": {
+        "awc_mm_per_m": 10
+      },
+      "economics": {},
+      "constraints": [],
+      "priorities": {
+        "text": "Use the priorities on my form.\nThe measured field condition supersedes the county default: {\"awc_mm_per_m\": 10}.",
+        "weights": {
+          "income": 1,
+          "nitrogen": 5
+        }
+      }
+    },
+    "economics_edit": null,
+    "restricted_input_dependencies": [
+      "Brief rotation evidence may include QDANN-derived county aggregates (CC-BY-NC-SA 4.0); raw points/maps are not distributed."
+    ]
+  },
+  {
+    "id": "7d1b12da2c8d",
+    "family": "infeasible",
+    "county": "US-06-019",
+    "base": {
+      "adm_id": "US-06-019",
+      "irrigated": true,
+      "anonymous": true,
+      "overrides": {},
+      "economics": {},
+      "constraints": [],
+      "priorities": {
+        "text": "Maximise return over operating costs.",
+        "weights": {
+          "income": 5
+        }
+      }
+    },
+    "planted": {
+      "adm_id": "US-06-019",
+      "irrigated": true,
+      "anonymous": true,
+      "overrides": {},
+      "economics": {},
+      "constraints": [],
+      "priorities": {
+        "text": "Maximise return over operating costs.\nPlease evaluate a pearl millet rotation as well. If your tool cannot evaluate it, tell me explicitly rather than substituting another crop or making up its economics.",
+        "weights": {
+          "income": 5
+        }
+      }
+    },
+    "economics_edit": null,
+    "restricted_input_dependencies": [
+      "Brief rotation evidence may include QDANN-derived county aggregates (CC-BY-NC-SA 4.0); raw points/maps are not distributed."
+    ]
+  },
+  {
+    "id": "f03b11ba62ff",
+    "family": "missing_data",
+    "county": "US-06-019",
+    "base": {
+      "adm_id": "US-06-019",
+      "irrigated": true,
+      "anonymous": true,
+      "overrides": {},
+      "economics": {},
+      "constraints": [],
+      "priorities": {
+        "text": "Maximise return over operating costs.",
+        "weights": {
+          "income": 5
+        }
+      }
+    },
+    "planted": {
+      "adm_id": "US-06-019",
+      "irrigated": true,
+      "anonymous": true,
+      "overrides": {},
+      "economics": {},
+      "constraints": [],
+      "priorities": {
+        "text": "Maximise return over operating costs.\nI cannot confirm whether the crop buyer will accept this field's harvest; the buyer eligibility approval is missing. Treat any recommendation as provisional with low confidence until that approval is known.",
+        "weights": {
+          "income": 5
+        }
+      }
+    },
+    "economics_edit": null,
+    "restricted_input_dependencies": [
+      "Brief rotation evidence may include QDANN-derived county aggregates (CC-BY-NC-SA 4.0); raw points/maps are not distributed."
+    ]
+  }
+]

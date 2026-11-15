@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "counties": [
+    {"name": "story", "adm_id": "US-19-169", "irrigated": false},
+    {"name": "york", "adm_id": "US-31-185", "irrigated": true},
+    {"name": "lubbock", "adm_id": "US-48-303", "irrigated": true},
+    {"name": "sumner", "adm_id": "US-20-191", "irrigated": false},
+    {"name": "bolivar", "adm_id": "US-28-011", "irrigated": true},
+    {"name": "fresno", "adm_id": "US-06-019", "irrigated": true}
+  ],
+  "families": ["hidden_limit", "quoted_price", "field_fact", "priority_order", "infeasible", "missing_data"],
+  "repeats": 3,
+  "excluded_families": {
+    "unmodelled_effect": "Available real cards do not supply a transferable quantitative effect large enough to prove a unique ranking reversal. No fabricated coefficient is permitted.",
+    "distractor": "A distractor-only twin should preserve the answer, contradicting the required planted-answer flip. Needs a separately registered invariance track."
+  }
+}

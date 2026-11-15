@@ -1,0 +1,12 @@
+#!/bin/sh
+# Receipt-only wrapper around the project's unchanged production client.
+set -eu
+status=0
+./.farmsim-client "$@" > .farmsim-output || status=$?
+cat .farmsim-output
+case "${1:-}" in
+    simulate|scoreboard)
+        n=$(cat .farmsim_calls)
+        [ -s ".sim-response-$n.json" ] || sed '1d' .farmsim-output > ".sim-response-$n.json" ;;
+esac
+exit "$status"

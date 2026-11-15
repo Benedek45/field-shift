@@ -1,0 +1,96 @@
+<!doctype html>
+<html
+  lang="en"
+  data-composition-variables='[{"id":"repo","type":"string","label":"Repository link","default":"github.com/Benedek45/field-shift"}]'
+>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <script src="assets/vendor/gsap.min.js"></script>
+    <script src="assets/data/story_layers.js"></script>
+    <script src="assets/shots/shots.js"></script>
+    <style>
+      :root {
+        --ground: #f3f0e6;
+        --paper: #fbfaf5;
+        --ink: #17241b;
+        --muted: #56665a;
+        --line: #d9d4c4;
+        --green: #2e6b3f;
+        --green-soft: #8fb38f;
+        --amber: #b86e12;
+        --red: #a8402c;
+        --blue: #2f5f8a;
+        --font-display: "Inter", sans-serif;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: var(--ground);
+      }
+      #root {
+        width: 100%;
+        height: 100%;
+        font-family: var(--font-display);
+        color: var(--ink);
+      }
+      #ground {
+        position: absolute;
+        inset: 0;
+        background: var(--ground);
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      data-composition-id="main"
+      data-start="0"
+      data-duration="30"
+      data-width="1920"
+      data-height="1080"
+    >
+      <div id="ground"></div>
+      <div id="title" data-composition-id="title" data-composition-src="compositions/title.html"
+        data-start="0" data-duration="2.4" data-track-index="1" data-track-kind="graphics"
+        data-width="1920" data-height="1080"></div>
+      <div id="form" data-composition-id="form" data-composition-src="compositions/form.html"
+        data-start="2.4" data-duration="3.4" data-track-index="1" data-track-kind="graphics"
+        data-width="1920" data-height="1080"></div>
+      <div id="layers" data-composition-id="layers" data-composition-src="compositions/layers.html"
+        data-start="5.8" data-duration="3.8" data-track-index="1" data-track-kind="graphics"
+        data-width="1920" data-height="1080"></div>
+      <div id="why" data-composition-id="why" data-composition-src="compositions/why.html"
+        data-start="9.6" data-duration="5.6" data-track-index="1" data-track-kind="graphics"
+        data-width="1920" data-height="1080"></div>
+      <div id="agent" data-composition-id="agent" data-composition-src="compositions/agent.html"
+        data-start="15.2" data-duration="3.4" data-track-index="1" data-track-kind="graphics"
+        data-width="1920" data-height="1080"></div>
+      <div id="solution" data-composition-id="solution" data-composition-src="compositions/solution.html"
+        data-start="18.6" data-duration="3.8" data-track-index="1" data-track-kind="graphics"
+        data-width="1920" data-height="1080"></div>
+      <div id="qa" data-composition-id="qa" data-composition-src="compositions/qa.html"
+        data-start="22.4" data-duration="3.8" data-track-index="1" data-track-kind="graphics"
+        data-width="1920" data-height="1080"></div>
+      <div id="bench" data-composition-id="bench" data-composition-src="compositions/bench.html"
+        data-start="26.2" data-duration="3.8" data-track-index="1" data-track-kind="graphics"
+        data-width="1920" data-height="1080"
+        data-variable-values='{"repo":"github.com/Benedek45/field-shift"}'></div>
+      <!-- Synthesized by scripts/make_audio.py (no samples, no generated audio); rebuild before rendering. -->
+      <audio id="soundtrack" src="assets/audio/soundtrack.wav" data-start="0" data-duration="30"
+        data-track-index="2" data-volume="1"></audio>
+    </div>
+    <script>
+      const tl = gsap.timeline({ paused: true });
+      window.__timelines["main"] = tl;
+    </script>
+  </body>
+</html>

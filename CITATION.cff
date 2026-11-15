@@ -1,0 +1,39 @@
+# Code: MIT (LICENSE). Text, study-card summaries, tasks and results: CC-BY-4.0 (LICENSE-docs).
+cff-version: 1.2.0
+message: >-
+  If you use the Field Shift B0 benchmark (method, tasks, scorer or preliminary
+  results), please cite it as below. v0.5.0 results are PRELIMINARY: one repeat
+  of three, post hoc scorer v2, prompt v1, keys from our own simulator.
+type: software
+title: "Field Shift B0: a planted-answer benchmark for farm-advisor agents with a decision tool"
+version: 0.5.0
+date-released: "2026-11-15"
+authors:
+  - alias: Benedek45
+repository-code: "https://github.com/Benedek45/field-shift"
+license:
+  - MIT
+  - CC-BY-4.0
+keywords:
+  - benchmark
+  - LLM agents
+  - tool use
+  - crop rotation
+  - decision support
+  - NASA POWER
+  - NASA Space Apps 2026
+abstract: >-
+  B0 tests whether an agent with a crop-rotation decision tool finds a decisive
+  fact in a farm brief and uses it. There are 35 control/planted twin pairs in six
+  families (hidden limit, quoted price, field fact, priority order, infeasible
+  request, missing data). Keys were computed by the Field Shift simulator
+  (fieldshift-v25), not from field truth. v0.5.0 contains the method, the public dev
+  tasks, the generator and scorer, and preliminary repeat-0 results for
+  anthropic/claude-opus-5-5, opencode-go/gpt-6-luna, opencode-go/glm-5.3-flash and
+  opencode-go/deepseek-v4.1-flash in OpenCode 2.3.0.
+  AI-use disclosure (NASA Space Apps 2026 rules): the code, task generator, scorer
+  and documentation were written with AI coding agents in OpenCode, mainly
+  Anthropic Claude Opus 5.5 and OpenAI GPT-6
+  Luna, under the team's direction and review. The project idea and the
+  benchmark question are the team's. The models listed above are the evaluated
+  subjects. The keys are simulator outputs, not language-model outputs.

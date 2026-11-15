@@ -1,0 +1,341 @@
+[
+ {
+  "id": "story-p1",
+  "adm_id": "US-19-169",
+  "irrigated": false,
+  "priority": "Farmer form. Importance from 0 (does not matter) to 5 (matters most): money 5, water 1, soil 1, nitrogen loss 1, erosion 1, ground cover 1, forage 1, local market 1. Risk attitude: accept bad years. In my own words: \"I want the most money, I can carry a bad year.\"",
+  "weights": {
+   "income": 5,
+   "water": 1,
+   "soil": 1,
+   "nitrogen": 1,
+   "erosion": 1,
+   "cover": 1,
+   "forage": 1,
+   "market": 1,
+   "resilience": 1
+  },
+  "economics": {},
+  "expected_limits": {},
+  "farm": "story",
+  "profile": "p1",
+  "anonymous": true,
+  "setups": [
+   "full"
+  ],
+  "reps": 3
+ },
+ {
+  "id": "story-p2",
+  "adm_id": "US-19-169",
+  "irrigated": false,
+  "priority": "Farmer form. Importance from 0 (does not matter) to 5 (matters most): money 4, water 2, soil 2, nitrogen loss 1, erosion 1, ground cover 1, forage 1, local market 1. Risk attitude: protect me in bad years. In my own words: \"Keep at least 80% of my current income.\"",
+  "weights": {
+   "income": 4,
+   "water": 2,
+   "soil": 2,
+   "nitrogen": 1,
+   "erosion": 1,
+   "cover": 1,
+   "forage": 1,
+   "market": 1,
+   "resilience": 5
+  },
+  "economics": {
+   "labour_usd_hr": 22,
+   "fertilizer_n_usd_kg": 1.4
+  },
+  "expected_limits": {
+   "min_margin_share_of_existing": 0.8
+  },
+  "farm": "story",
+  "profile": "p2",
+  "anonymous": true,
+  "setups": [
+   "full"
+  ],
+  "reps": 3
+ },
+ {
+  "id": "story-p3",
+  "adm_id": "US-19-169",
+  "irrigated": false,
+  "priority": "Farmer form. Importance from 0 (does not matter) to 5 (matters most): money 3, water 1, soil 5, nitrogen loss 1, erosion 5, ground cover 4, forage 1, local market 1. Risk attitude: balanced. In my own words: \"No new machinery.\"",
+  "weights": {
+   "income": 3,
+   "water": 1,
+   "soil": 5,
+   "nitrogen": 1,
+   "erosion": 5,
+   "cover": 4,
+   "forage": 1,
+   "market": 1,
+   "resilience": 3
+  },
+  "economics": {},
+  "expected_limits": {
+   "no_new_equipment": true
+  },
+  "farm": "story",
+  "profile": "p3",
+  "anonymous": true,
+  "setups": [
+   "full"
+  ],
+  "reps": 3
+ },
+ {
+  "id": "story-p4",
+  "adm_id": "US-19-169",
+  "irrigated": false,
+  "priority": "Farmer form. Importance from 0 (does not matter) to 5 (matters most): money 3, water 5, soil 1, nitrogen loss 4, erosion 1, ground cover 1, forage 1, local market 1. Risk attitude: balanced. In my own words: \"Keep a forage crop for my cattle.\"",
+  "weights": {
+   "income": 3,
+   "water": 5,
+   "soil": 1,
+   "nitrogen": 4,
+   "erosion": 1,
+   "cover": 1,
+   "forage": 1,
+   "market": 1,
+   "resilience": 3
+  },
+  "economics": {},
+  "expected_limits": {
+   "keep_forage_crop": true
+  },
+  "farm": "story",
+  "profile": "p4",
+  "anonymous": true,
+  "setups": [
+   "full"
+  ],
+  "reps": 3
+ },
+ {
+  "id": "lubbock-p1",
+  "adm_id": "US-48-303",
+  "irrigated": true,
+  "priority": "Farmer form. Importance from 0 (does not matter) to 5 (matters most): money 5, water 1, soil 1, nitrogen loss 1, erosion 1, ground cover 1, forage 1, local market 1. Risk attitude: accept bad years. In my own words: \"I want the most money, I can carry a bad year.\"",
+  "weights": {
+   "income": 5,
+   "water": 1,
+   "soil": 1,
+   "nitrogen": 1,
+   "erosion": 1,
+   "cover": 1,
+   "forage": 1,
+   "market": 1,
+   "resilience": 1
+  },
+  "economics": {},
+  "expected_limits": {},
+  "farm": "lubbock",
+  "profile": "p1",
+  "anonymous": true,
+  "setups": [
+   "full"
+  ],
+  "reps": 3
+ },
+ {
+  "id": "lubbock-p2",
+  "adm_id": "US-48-303",
+  "irrigated": true,
+  "priority": "Farmer form. Importance from 0 (does not matter) to 5 (matters most): money 4, water 2, soil 2, nitrogen loss 1, erosion 1, ground cover 1, forage 1, local market 1. Risk attitude: protect me in bad years. In my own words: \"Keep at least 80% of my current income.\"",
+  "weights": {
+   "income": 4,
+   "water": 2,
+   "soil": 2,
+   "nitrogen": 1,
+   "erosion": 1,
+   "cover": 1,
+   "forage": 1,
+   "market": 1,
+   "resilience": 5
+  },
+  "economics": {
+   "labour_usd_hr": 22,
+   "fertilizer_n_usd_kg": 1.4
+  },
+  "expected_limits": {
+   "min_margin_share_of_existing": 0.8
+  },
+  "farm": "lubbock",
+  "profile": "p2",
+  "anonymous": true,
+  "setups": [
+   "full"
+  ],
+  "reps": 3
+ },
+ {
+  "id": "lubbock-p3",
+  "adm_id": "US-48-303",
+  "irrigated": true,
+  "priority": "Farmer form. Importance from 0 (does not matter) to 5 (matters most): money 3, water 1, soil 5, nitrogen loss 1, erosion 5, ground cover 4, forage 1, local market 1. Risk attitude: balanced. In my own words: \"No new machinery.\"",
+  "weights": {
+   "income": 3,
+   "water": 1,
+   "soil": 5,
+   "nitrogen": 1,
+   "erosion": 5,
+   "cover": 4,
+   "forage": 1,
+   "market": 1,
+   "resilience": 3
+  },
+  "economics": {},
+  "expected_limits": {
+   "no_new_equipment": true
+  },
+  "farm": "lubbock",
+  "profile": "p3",
+  "anonymous": true,
+  "setups": [
+   "full"
+  ],
+  "reps": 3
+ },
+ {
+  "id": "lubbock-p4",
+  "adm_id": "US-48-303",
+  "irrigated": true,
+  "priority": "Farmer form. Importance from 0 (does not matter) to 5 (matters most): money 3, water 5, soil 1, nitrogen loss 4, erosion 1, ground cover 1, forage 1, local market 1. Risk attitude: balanced. In my own words: \"Keep a forage crop for my cattle.\"",
+  "weights": {
+   "income": 3,
+   "water": 5,
+   "soil": 1,
+   "nitrogen": 4,
+   "erosion": 1,
+   "cover": 1,
+   "forage": 1,
+   "market": 1,
+   "resilience": 3
+  },
+  "economics": {},
+  "expected_limits": {
+   "keep_forage_crop": true
+  },
+  "farm": "lubbock",
+  "profile": "p4",
+  "anonymous": true,
+  "setups": [
+   "full"
+  ],
+  "reps": 3
+ },
+ {
+  "id": "york-p1",
+  "adm_id": "US-31-185",
+  "irrigated": true,
+  "priority": "Farmer form. Importance from 0 (does not matter) to 5 (matters most): money 5, water 1, soil 1, nitrogen loss 1, erosion 1, ground cover 1, forage 1, local market 1. Risk attitude: accept bad years. In my own words: \"I want the most money, I can carry a bad year.\"",
+  "weights": {
+   "income": 5,
+   "water": 1,
+   "soil": 1,
+   "nitrogen": 1,
+   "erosion": 1,
+   "cover": 1,
+   "forage": 1,
+   "market": 1,
+   "resilience": 1
+  },
+  "economics": {},
+  "expected_limits": {},
+  "farm": "york",
+  "profile": "p1",
+  "anonymous": true,
+  "setups": [
+   "full"
+  ],
+  "reps": 3
+ },
+ {
+  "id": "york-p2",
+  "adm_id": "US-31-185",
+  "irrigated": true,
+  "priority": "Farmer form. Importance from 0 (does not matter) to 5 (matters most): money 4, water 2, soil 2, nitrogen loss 1, erosion 1, ground cover 1, forage 1, local market 1. Risk attitude: protect me in bad years. In my own words: \"Keep at least 80% of my current income.\"",
+  "weights": {
+   "income": 4,
+   "water": 2,
+   "soil": 2,
+   "nitrogen": 1,
+   "erosion": 1,
+   "cover": 1,
+   "forage": 1,
+   "market": 1,
+   "resilience": 5
+  },
+  "economics": {
+   "labour_usd_hr": 22,
+   "fertilizer_n_usd_kg": 1.4
+  },
+  "expected_limits": {
+   "min_margin_share_of_existing": 0.8
+  },
+  "farm": "york",
+  "profile": "p2",
+  "anonymous": true,
+  "setups": [
+   "full"
+  ],
+  "reps": 3
+ },
+ {
+  "id": "york-p3",
+  "adm_id": "US-31-185",
+  "irrigated": true,
+  "priority": "Farmer form. Importance from 0 (does not matter) to 5 (matters most): money 3, water 1, soil 5, nitrogen loss 1, erosion 5, ground cover 4, forage 1, local market 1. Risk attitude: balanced. In my own words: \"No new machinery.\"",
+  "weights": {
+   "income": 3,
+   "water": 1,
+   "soil": 5,
+   "nitrogen": 1,
+   "erosion": 5,
+   "cover": 4,
+   "forage": 1,
+   "market": 1,
+   "resilience": 3
+  },
+  "economics": {},
+  "expected_limits": {
+   "no_new_equipment": true
+  },
+  "farm": "york",
+  "profile": "p3",
+  "anonymous": true,
+  "setups": [
+   "full"
+  ],
+  "reps": 3
+ },
+ {
+  "id": "york-p4",
+  "adm_id": "US-31-185",
+  "irrigated": true,
+  "priority": "Farmer form. Importance from 0 (does not matter) to 5 (matters most): money 3, water 5, soil 1, nitrogen loss 4, erosion 1, ground cover 1, forage 1, local market 1. Risk attitude: balanced. In my own words: \"Keep a forage crop for my cattle.\"",
+  "weights": {
+   "income": 3,
+   "water": 5,
+   "soil": 1,
+   "nitrogen": 4,
+   "erosion": 1,
+   "cover": 1,
+   "forage": 1,
+   "market": 1,
+   "resilience": 3
+  },
+  "economics": {},
+  "expected_limits": {
+   "keep_forage_crop": true
+  },
+  "farm": "york",
+  "profile": "p4",
+  "anonymous": true,
+  "setups": [
+   "full"
+  ],
+  "reps": 3
+ }
+]

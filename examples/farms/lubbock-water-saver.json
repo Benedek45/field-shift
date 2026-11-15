@@ -1,0 +1,7 @@
+{
+  "location": {"adm_id": "US-48-303", "irrigated": true, "well_capacity": {"value": 18, "unit": "in/yr"}},
+  "priorities": {"preset": "water_saver"},
+  "economics": {"water_usd_acre_foot": 100, "labour_usd_hr": 22},
+  "weather_view": "outlook",
+  "free_text": "Water is expensive. Please flag the uncertainty in pumping costs and hay buyers."
+}

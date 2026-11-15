@@ -1,0 +1,105 @@
+<template>
+  <style>
+    #root {
+      position: absolute;
+      inset: 0;
+      background: var(--ground);
+      font-family: var(--font-display);
+      color: var(--ink);
+    }
+    #t-kicker {
+      position: absolute;
+      left: 220px;
+      top: 250px;
+      font-size: 34px;
+      font-weight: 700;
+      color: var(--muted);
+      letter-spacing: 0.01em;
+    }
+    #t-name {
+      position: absolute;
+      left: 212px;
+      top: 300px;
+      font-size: 190px;
+      font-weight: 900;
+      letter-spacing: -0.045em;
+      line-height: 1;
+    }
+    #t-name span {
+      color: var(--green);
+    }
+    #t-sub {
+      position: absolute;
+      left: 220px;
+      top: 530px;
+      width: 1420px;
+      font-size: 54px;
+      font-weight: 700;
+      line-height: 1.18;
+    }
+    #t-sub .w {
+      display: inline-block;
+    }
+    #t-strips {
+      position: absolute;
+      left: 220px;
+      top: 760px;
+      display: flex;
+      gap: 18px;
+    }
+    .t-strip {
+      width: 300px;
+      height: 92px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 36px;
+      font-weight: 700;
+    }
+    .t-soy {
+      background: #b9d4a3;
+      color: #1f3b17;
+    }
+    .t-corn {
+      background: #e8c45c;
+      color: #4a3605;
+    }
+  </style>
+  <div id="root" data-composition-id="title" data-width="1920" data-height="1080">
+    <div id="t-kicker">
+      NASA Space Apps 2026 · Field Shift: Adapting Farms with NASA Data
+    </div>
+    <h1 id="t-name">Field <span>Shift</span></h1>
+    <div id="t-sub">
+      <span class="w">Crop-rotation</span> <span class="w">advice</span> <span class="w">for</span>
+      <span class="w">real</span> <span class="w">farms,</span> <span class="w">built</span>
+      <span class="w">on</span> <span class="w">NASA</span> <span class="w">data</span>
+      <span class="w">and</span> <span class="w">checked</span> <span class="w">by</span>
+      <span class="w">code.</span>
+    </div>
+    <div id="t-strips">
+      <div class="t-strip t-soy">soybean</div>
+      <div class="t-strip t-corn">corn</div>
+      <div class="t-strip t-soy">soybean</div>
+      <div class="t-strip t-corn">corn</div>
+    </div>
+  </div>
+  <script>
+    const tl = gsap.timeline({ paused: true });
+    tl.fromTo(
+      "#t-sub .w",
+      { opacity: 0.12 },
+      { opacity: 1, duration: 0.1, ease: "power2.out", stagger: 0.04 },
+      0.1,
+    );
+    tl.fromTo(
+      ".t-strip",
+      { opacity: 0, scaleX: 0.2, transformOrigin: "0% 50%" },
+      { opacity: 1, scaleX: 1, duration: 0.45, ease: "expo.out", stagger: 0.09 },
+      0.3,
+    );
+    tl.to("#root", { opacity: 0, duration: 0.16, ease: "power2.in" }, 2.22);
+    window.__timelines["title"] = tl;
+  </script>
+</template>

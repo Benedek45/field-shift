@@ -1,0 +1,8 @@
+{
+  "location": {"county": "Story County, IA", "irrigated": false},
+  "current_rotation": [{"crop": "corn"}, {"crop": "soybean"}, {"crop": "soybean"}],
+  "priorities": {"preset": "steady"},
+  "limits": {"minimum_share_current_income": 0.8},
+  "weather_view": "record",
+  "free_text": "I want dependable income. Please explain the trade-offs; I can ask my agronomist about pests."
+}

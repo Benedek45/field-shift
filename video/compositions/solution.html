@@ -1,0 +1,175 @@
+<template>
+  <style>
+    #root {
+      position: absolute;
+      inset: 0;
+      background: var(--ground);
+      font-family: var(--font-display);
+      color: var(--ink);
+    }
+    #s-top {
+      position: absolute;
+      left: 230px;
+      top: 80px;
+      width: 1460px;
+      display: flex;
+      align-items: baseline;
+      gap: 34px;
+    }
+    #s-rec {
+      font-size: 64px;
+      font-weight: 900;
+      letter-spacing: -0.03em;
+    }
+    #s-rec span {
+      color: var(--green);
+    }
+        #s-chk .tag {
+      position: absolute;
+    }
+    #s-money {
+      font-size: 38px;
+      font-weight: 700;
+      color: var(--muted);
+    }
+    .s-card {
+      position: absolute;
+      left: 230px;
+      width: 1280px;
+      border-radius: 16px;
+      overflow: hidden;
+      background: var(--paper);
+      border: 2px solid var(--line);
+      box-shadow: 0 20px 50px rgba(23, 36, 27, 0.14);
+    }
+    .s-card img {
+      display: block;
+      width: 1280px;
+      height: auto;
+    }
+    #s-cmp {
+      top: 170px;
+    }
+    #s-chk {
+      top: 170px;
+    }
+    #s-stamp {
+      position: absolute;
+      left: 1540px;
+      top: 170px;
+      width: 150px;
+      box-sizing: border-box;
+      padding: 18px 10px;
+      border-radius: 16px;
+      background: var(--green);
+      color: #fff;
+      text-align: center;
+      font-size: 30px;
+      font-weight: 800;
+      line-height: 1.15;
+    }
+    #s-stamp .n {
+      display: block;
+      font-size: 52px;
+      font-weight: 900;
+      line-height: 1;
+    }
+    #s-warn {
+      position: absolute;
+      left: 1540px;
+      top: 612px;
+      width: 150px;
+      box-sizing: border-box;
+      padding: 18px 10px;
+      border-radius: 16px;
+      background: #a3261c;
+      color: #fff;
+      text-align: center;
+      font-size: 30px;
+      font-weight: 800;
+      line-height: 1.15;
+    }
+    #s-warn2 {
+      position: absolute;
+      left: 1540px;
+      top: 396px;
+      width: 150px;
+      box-sizing: border-box;
+      padding: 18px 10px;
+      border-radius: 16px;
+      background: #8a520c;
+      color: #fff;
+      text-align: center;
+      font-size: 30px;
+      font-weight: 800;
+      line-height: 1.15;
+    }
+    #s-warn .n,
+    #s-warn2 .n {
+      display: block;
+      font-size: 64px;
+      font-weight: 900;
+      line-height: 1;
+    }
+    .cap {
+      position: absolute;
+      left: 230px;
+      top: 872px;
+      width: 1460px;
+      display: flex;
+      align-items: center;
+      gap: 26px;
+      font-size: 50px;
+      font-weight: 800;
+      letter-spacing: -0.01em;
+    }
+    .cap b {
+      flex: none;
+      width: 76px;
+      height: 76px;
+      border-radius: 38px;
+      background: var(--green);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 42px;
+    }
+    #s-src {
+      position: absolute;
+      left: 232px;
+      top: 976px;
+      font-size: 28px;
+      color: var(--muted);
+    }
+  </style>
+  <div id="root" data-composition-id="solution" data-width="1920" data-height="1080">
+    <div id="s-top">
+      <div id="s-rec">Keep <span>soybean → corn</span></div>
+      <div id="s-money">$422/acre typical · $329 in a bad year</div>
+    </div>
+    <div id="s-cmp" class="s-card">
+      <img src="assets/shots/comparison.png" alt="Recommended rotation and comparison table" />
+    </div>
+    <div id="s-chk" class="s-card">
+      <img src="assets/shots/checks.png" alt="Code checks: nine pass" />
+    </div>
+    <div id="s-stamp"><span class="n">9/9</span>checks passed</div>
+    <div id="s-cap" class="cap">
+      <b>4</b><span>Code checks every answer. Any fail: no advice shown.</span>
+    </div>
+    <div id="s-src">Real screenshots · GPT-6 Luna, 63 s · every $ and inch figure matched the cited simulator run</div>
+  </div>
+  <script>
+    const tl = gsap.timeline({ paused: true });
+    tl.fromTo("#s-rec", { opacity: 0, filter: "blur(8px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.2, ease: "power4.out" }, 0.05);
+    tl.fromTo("#s-money", { opacity: 0 }, { opacity: 1, duration: 0.3 }, 0.35);
+    tl.fromTo("#s-cmp", { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.45, ease: "expo.out" }, 0.1);
+    tl.fromTo("#s-chk", { opacity: 0, y: 60 }, { opacity: 1, y: 0, duration: 0.45, ease: "expo.out" }, 1.6);
+    tl.fromTo("#s-stamp", { opacity: 0, scale: 1.25 }, { opacity: 1, scale: 1, duration: 0.3, ease: "expo.out" }, 2.1);
+    tl.fromTo("#s-cap", { opacity: 0, filter: "blur(8px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.2, ease: "power4.out" }, 0.25);
+    tl.fromTo("#s-src", { opacity: 0 }, { opacity: 1, duration: 0.3 }, 0.4);
+    tl.to("#root", { opacity: 0, duration: 0.15, ease: "power2.in" }, 3.62);
+    window.__timelines["solution"] = tl;
+  </script>
+</template>

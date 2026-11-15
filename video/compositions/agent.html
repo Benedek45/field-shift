@@ -1,0 +1,160 @@
+<template>
+  <style>
+    #root {
+      position: absolute;
+      inset: 0;
+      background: var(--ground);
+      font-family: var(--font-display);
+      color: var(--ink);
+    }
+    #a-shot {
+      position: absolute;
+      left: 230px;
+      top: 64px;
+      width: 1460px;
+      height: 479px;
+      border-radius: 18px;
+      overflow: hidden;
+      background: var(--paper);
+      border: 2px solid var(--line);
+      box-shadow: 0 24px 60px rgba(23, 36, 27, 0.16);
+    }
+    #a-shot img {
+      display: block;
+      height: 475px;
+      width: auto;
+      margin: 0 auto;
+    }
+    #a-count {
+      position: absolute;
+      left: 230px;
+      top: 572px;
+      width: 430px;
+      height: 262px;
+      box-sizing: border-box;
+      background: var(--paper);
+      border: 2px solid var(--line);
+      border-radius: 18px;
+      padding: 24px 30px;
+    }
+    #a-count .num {
+      font-size: 88px;
+      font-weight: 900;
+      letter-spacing: -0.04em;
+      line-height: 1;
+      color: var(--blue);
+    }
+    #a-count .txt {
+      margin-top: 12px;
+      font-size: 30px;
+      font-weight: 700;
+      line-height: 1.22;
+    }
+    #a-studies {
+      position: absolute;
+      left: 690px;
+      top: 572px;
+      width: 1000px;
+      height: 262px;
+      box-sizing: border-box;
+      background: var(--paper);
+      border: 2px solid var(--line);
+      border-left: 10px solid var(--green);
+      border-radius: 18px;
+      padding: 18px 28px;
+    }
+    #a-studies .h {
+      font-size: 30px;
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+    #a-studies .h i {
+      font-style: normal;
+      font-weight: 600;
+      color: var(--muted);
+    }
+    .a-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 29px;
+      line-height: 1.2;
+      padding: 9px 0;
+      border-top: 1px solid var(--line);
+    }
+    .a-row .fit {
+      flex: none;
+      margin-left: 18px;
+      padding: 2px 16px;
+      border-radius: 10px;
+      font-size: 28px;
+      font-weight: 800;
+      color: #fff;
+      background: var(--green);
+    }
+    .a-row .fit.partial {
+      background: #8a520c;
+    }
+    .cap {
+      position: absolute;
+      left: 230px;
+      top: 872px;
+      width: 1460px;
+      display: flex;
+      align-items: center;
+      gap: 26px;
+      font-size: 50px;
+      font-weight: 800;
+      letter-spacing: -0.01em;
+    }
+    .cap b {
+      flex: none;
+      width: 76px;
+      height: 76px;
+      border-radius: 38px;
+      background: var(--green);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 42px;
+    }
+    #a-src {
+      position: absolute;
+      left: 232px;
+      top: 976px;
+      font-size: 28px;
+      color: var(--muted);
+    }
+  </style>
+  <div id="root" data-composition-id="agent" data-width="1920" data-height="1080">
+    <div id="a-shot">
+      <img src="assets/shots/progress.png" alt="Live progress: the agent's tool calls" />
+    </div>
+    <div id="a-count">
+      <div class="num">434 → 6</div>
+      <div class="txt">rotations scored on 45 years of weather; 6 meet the limits</div>
+    </div>
+    <div id="a-studies">
+      <div class="h">Study search <i>· 56 field studies · fit to this farm</i></div>
+      <div class="a-row"><span><b>Kaspar 2007</b>, Iowa: rye cut drain nitrate load 61%</span><span class="fit">close</span></div>
+      <div class="a-row"><span><b>Myers-Bailey 2026</b>, Corn Belt: covers vs nitrate</span><span class="fit">close</span></div>
+      <div class="a-row"><span><b>Abdalla 2019</b>, global review, 372 sites</span><span class="fit partial">partial</span></div>
+    </div>
+    <div id="a-cap" class="cap">
+      <b>3</b><span>The agent runs our simulator and reads field studies.</span>
+    </div>
+    <div id="a-src">Real screenshot at 26 s, plus this run's simulator and study-search output · GPT-6 Luna, Story County</div>
+  </div>
+  <script>
+    const tl = gsap.timeline({ paused: true });
+    tl.fromTo("#a-shot", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.4, ease: "expo.out" }, 0);
+    tl.fromTo("#a-count", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.4, ease: "expo.out" }, 0.6);
+    tl.fromTo("#a-studies", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.4, ease: "expo.out" }, 0.8);
+    tl.fromTo(".a-row", { opacity: 0 }, { opacity: 1, duration: 0.15, stagger: 0.18 }, 1.0);
+    tl.fromTo("#a-cap", { opacity: 0, filter: "blur(8px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.2, ease: "power4.out" }, 0.15);
+    tl.fromTo("#a-src", { opacity: 0 }, { opacity: 1, duration: 0.3 }, 0.4);
+    tl.to("#root", { opacity: 0, duration: 0.15, ease: "power2.in" }, 3.22);
+    window.__timelines["agent"] = tl;
+  </script>
+</template>

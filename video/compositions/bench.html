@@ -1,0 +1,139 @@
+<template>
+  <style>
+    #root {
+      position: absolute;
+      inset: 0;
+      background: var(--ground);
+      font-family: var(--font-display);
+      color: var(--ink);
+    }
+    #b-head {
+      position: absolute;
+      left: 230px;
+      top: 70px;
+      font-size: 64px;
+      font-weight: 900;
+      letter-spacing: -0.03em;
+    }
+    #b-sub {
+      position: absolute;
+      left: 232px;
+      top: 156px;
+      width: 1460px;
+      font-size: 32px;
+      font-weight: 600;
+      color: var(--muted);
+    }
+    #b-legend {
+      position: absolute;
+      left: 1000px;
+      top: 222px;
+      display: flex;
+      gap: 34px;
+      font-size: 28px;
+      font-weight: 700;
+    }
+    #b-legend i {
+      display: inline-block;
+      width: 26px;
+      height: 26px;
+      border-radius: 5px;
+      margin-right: 10px;
+      vertical-align: -4px;
+    }
+    .b-row {
+      position: absolute;
+      left: 230px;
+      width: 1460px;
+      height: 112px;
+    }
+    .b-name {
+      position: absolute;
+      left: 0;
+      top: 26px;
+      width: 440px;
+      white-space: nowrap;
+      font-size: 36px;
+      font-weight: 800;
+    }
+    .b-bar {
+      position: absolute;
+      left: 450px;
+      height: 44px;
+      border-radius: 6px;
+    }
+    .b-bar.e { top: 8px; background: var(--blue); }
+    .b-bar.g { top: 58px; background: var(--green); }
+    .b-val {
+      position: absolute;
+      font-size: 30px;
+      font-weight: 900;
+    }
+    #b-end {
+      position: absolute;
+      left: 230px;
+      top: 800px;
+      width: 1460px;
+    }
+    #b-tag {
+      font-size: 54px;
+      font-weight: 900;
+      letter-spacing: -0.02em;
+    }
+    #b-repo {
+      margin-top: 12px;
+      font-size: 40px;
+      font-weight: 700;
+      color: var(--green);
+    }
+    #b-note {
+      position: absolute;
+      left: 232px;
+      top: 990px;
+      font-size: 28px;
+      color: var(--muted);
+    }
+  </style>
+  <div id="root" data-composition-id="bench" data-width="1920" data-height="1080" data-composition-variables='[{"id":"repo","type":"string","label":"Repository link","default":"github.com/Benedek45/field-shift"}]'>
+    <div id="b-head">How reliable is the agent?</div>
+    <div id="b-sub">Benchmark: 35 farm twins, each hiding one fact that changes the right answer</div>
+    <div id="b-legend"><span><i style="background: var(--blue)"></i>right rotation</span><span><i style="background: var(--green)"></i>right, every number traced to a source</span></div>
+    <div id="b-rows"></div>
+    <div id="b-end">
+      <div id="b-tag">No answer is better than a bad answer.</div>
+      <div id="b-repo" data-var-text="repo">github.com/Benedek45/field-shift</div>
+    </div>
+    <div id="b-note">Preliminary results v0.5: one repeat of three, 37–70 completed tasks per model · open code, data recipes and benchmark</div>
+  </div>
+  <script>
+    (function () {
+      const rows = [
+        ["Claude Opus 5.5", 97.1, 91.3],
+        ["GPT-6 Luna", 92.9, 68.6],
+        ["DeepSeek V4.1 Flash", 83.8, 75.7],
+        ["GLM 5.3 Flash", 86.7, 46.7],
+      ];
+      const full = 900;
+      let html = "";
+      rows.forEach(([name, exact, grounded], i) => {
+        const top = 290 + i * 122;
+        html += `<div class="b-row" style="top:${top}px"><div class="b-name">${name}</div>` +
+          `<div class="b-bar e" style="width:${(full * exact) / 100}px"></div>` +
+          `<div class="b-val" style="left:${460 + (full * exact) / 100}px;top:10px;color:var(--blue)">${Math.round(exact)}%</div>` +
+          `<div class="b-bar g" style="width:${(full * grounded) / 100}px"></div>` +
+          `<div class="b-val" style="left:${460 + (full * grounded) / 100}px;top:60px;color:var(--green)">${Math.round(grounded)}%</div></div>`;
+      });
+      document.getElementById("b-rows").innerHTML = html;
+      const vars = window.__hyperframes && window.__hyperframes.getVariables ? window.__hyperframes.getVariables() : {};
+      if (vars.repo) document.getElementById("b-repo").textContent = vars.repo;
+    })();
+    const tl = gsap.timeline({ paused: true });
+    tl.fromTo("#b-head", { opacity: 0, filter: "blur(8px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.2, ease: "power4.out" }, 0);
+    tl.fromTo("#b-sub, #b-legend", { opacity: 0 }, { opacity: 1, duration: 0.3 }, 0.2);
+    tl.fromTo(".b-bar", { scaleX: 0, transformOrigin: "0% 50%" }, { scaleX: 1, duration: 0.6, ease: "expo.out", stagger: 0.06 }, 0.3);
+    tl.fromTo(".b-val", { opacity: 0 }, { opacity: 1, duration: 0.2, stagger: 0.06 }, 0.6);
+    tl.fromTo("#b-tag", { opacity: 0, filter: "blur(8px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.2, ease: "power4.out" }, 1.4);
+    tl.fromTo("#b-repo, #b-note", { opacity: 0 }, { opacity: 1, duration: 0.3 }, 1.6);
+    window.__timelines["bench"] = tl;
+  </script>
+</template>

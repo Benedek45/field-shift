@@ -1,0 +1,21 @@
+@page { size: A4; margin: 18mm 15mm 18mm 15mm;
+  @bottom-center { content: counter(page); font-size: 8pt; color: #555; } }
+body { font-family: "Charter", "Georgia", serif; font-size: 10pt; line-height: 1.38; color: #111; max-width: none; margin: 0; padding: 0; }
+header#title-block-header { text-align: center; margin-bottom: 1.2em; }
+h1.title { font-size: 17pt; margin: 0 0 0.2em 0; }
+p.subtitle { font-size: 12pt; margin: 0 0 0.4em 0; }
+p.author, p.date { margin: 0.1em 0; }
+h1 { font-size: 13pt; margin: 1.3em 0 0.4em 0; break-after: avoid; }
+h2 { font-size: 11pt; margin: 1.0em 0 0.3em 0; break-after: avoid; }
+p, li { text-align: left; hyphens: auto; }
+code { font-family: "Menlo", monospace; font-size: 8.3pt; }
+pre { font-size: 7.6pt; background: #f4f4f4; padding: 6px 8px; white-space: pre-wrap; break-inside: avoid; }
+table { border-collapse: collapse; width: 100%; font-size: 6.9pt; margin: 0.4em 0 1em 0; break-inside: auto; }
+th, td { border-top: 0.5pt solid #bbb; border-bottom: 0.5pt solid #bbb; padding: 1.5px 3px; vertical-align: top; }
+td { white-space: nowrap; }
+.wrap td { white-space: normal; }
+th { background: #eee; }
+tr { break-inside: avoid; }
+figure { margin: 0.6em 0 1em 0; break-inside: avoid; text-align: center; }
+figure img { max-width: 100%; }
+figcaption { font-size: 8.5pt; color: #333; }

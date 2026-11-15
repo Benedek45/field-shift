@@ -1,0 +1,157 @@
+<template>
+  <style>
+    #root {
+      position: absolute;
+      inset: 0;
+      background: var(--ground);
+      font-family: var(--font-display);
+      color: var(--ink);
+    }
+    #w-head {
+      position: absolute;
+      left: 230px;
+      top: 110px;
+      width: 1460px;
+      font-size: 76px;
+      font-weight: 900;
+      letter-spacing: -0.03em;
+      line-height: 1.05;
+    }
+    #w-head span {
+      color: var(--green);
+    }
+    /* beat A */
+    .w-a {
+      position: absolute;
+      left: 230px;
+      width: 1460px;
+    }
+    .w-row {
+      display: flex;
+      align-items: center;
+      height: 110px;
+    }
+    .w-row .lab {
+      width: 400px;
+      font-size: 40px;
+      font-weight: 800;
+    }
+    .w-bar {
+      height: 74px;
+      border-radius: 8px;
+    }
+    .w-row .val {
+      margin-left: 28px;
+      font-size: 44px;
+      font-weight: 900;
+    }
+    #w-r1 { top: 330px; }
+    #w-r2 { top: 450px; }
+    #w-b1 { width: 720px; background: var(--amber); }
+    #w-b2 { width: 80px; background: var(--green); }
+    #w-r1 .val { color: var(--amber); }
+    #w-r2 .val { color: var(--green); }
+    #w-alab {
+      top: 610px;
+      font-size: 44px;
+      font-weight: 700;
+      line-height: 1.25;
+    }
+    /* beat B */
+    #w-b {
+      position: absolute;
+      left: 230px;
+      top: 300px;
+      width: 1460px;
+      display: flex;
+      gap: 40px;
+    }
+    .w-stat {
+      flex: 1;
+      background: var(--paper);
+      border: 2px solid var(--line);
+      border-radius: 18px;
+      padding: 30px 36px;
+    }
+    .w-stat .num {
+      font-size: 108px;
+      font-weight: 900;
+      letter-spacing: -0.04em;
+      line-height: 1;
+      color: var(--blue);
+    }
+    .w-stat .txt {
+      margin-top: 14px;
+      font-size: 36px;
+      font-weight: 700;
+      line-height: 1.22;
+    }
+    #w-so {
+      position: absolute;
+      left: 230px;
+      top: 640px;
+      width: 1460px;
+      font-size: 48px;
+      font-weight: 800;
+      line-height: 1.22;
+    }
+    #w-so span {
+      color: var(--green);
+    }
+    #w-src {
+      position: absolute;
+      left: 232px;
+      top: 960px;
+      width: 1460px;
+      font-size: 28px;
+      color: var(--muted);
+      line-height: 1.3;
+    }
+  </style>
+  <div id="root" data-composition-id="why" data-width="1920" data-height="1080">
+    <h2 id="w-head">Why an LLM? Why not just <span>train a neural network?</span></h2>
+    <div id="w-r1" class="w-a w-row clip" data-start="0" data-duration="2.6">
+      <div class="lab">Drought years</div>
+      <div class="w-bar" id="w-b1"></div>
+      <div class="val">−20 to −36% yield</div>
+    </div>
+    <div id="w-r2" class="w-a w-row clip" data-start="0" data-duration="2.6">
+      <div class="lab">Corn after corn</div>
+      <div class="w-bar" id="w-b2"></div>
+      <div class="val">−1 to −4%</div>
+    </div>
+    <div id="w-alab" class="w-a clip" data-start="0" data-duration="2.6">
+      Weather buries the rotation effect. And no data says<br />which rotation is “right”: that depends on each farmer.
+    </div>
+    <div id="w-b" class="clip" data-start="2.6" data-duration="3">
+      <div class="w-stat" id="w-s1">
+        <div class="num">17.5%</div>
+        <div class="txt">of yield swings explained by our best network (24% on rainfed fields)</div>
+      </div>
+      <div class="w-stat" id="w-s2">
+        <div class="num">Fails</div>
+        <div class="txt">on crops it has not seen; our field-state network reached 11%</div>
+      </div>
+    </div>
+    <div id="w-so" class="clip" data-start="2.6" data-duration="3">
+      So the network predicts yield <span>inside our simulator</span>. The LLM reads the farmer, runs it, explains.
+    </div>
+    <div id="w-src" class="clip" data-start="0" data-duration="5.6">
+      Corn yield loss 1983/1988/2012, 7 Corn Belt states (USDA NASS) · rotation: our satellite yield maps and Seifert et al. 2017 ·
+      network scores: within-crop R², five-fold cross-validation, 20 crops
+    </div>
+  </div>
+  <script>
+    const tl = gsap.timeline({ paused: true });
+    tl.fromTo("#w-head", { opacity: 0, filter: "blur(8px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.2, ease: "power4.out" }, 0);
+    tl.fromTo("#w-b1", { scaleX: 0, transformOrigin: "0% 50%" }, { scaleX: 1, duration: 0.6, ease: "expo.out" }, 0.25);
+    tl.fromTo("#w-b2", { scaleX: 0, transformOrigin: "0% 50%" }, { scaleX: 1, duration: 0.6, ease: "expo.out" }, 0.4);
+    tl.fromTo("#w-r1 .val, #w-r2 .val", { opacity: 0 }, { opacity: 1, duration: 0.2, stagger: 0.15 }, 0.5);
+    tl.fromTo("#w-alab", { opacity: 0 }, { opacity: 1, duration: 0.25 }, 0.8);
+    tl.fromTo(".w-stat", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.4, ease: "expo.out", stagger: 0.12 }, 2.62);
+    tl.fromTo("#w-so", { opacity: 0, filter: "blur(6px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.2, ease: "power4.out" }, 3.0);
+    tl.fromTo("#w-src", { opacity: 0 }, { opacity: 1, duration: 0.3 }, 0.6);
+    tl.to("#root", { opacity: 0, duration: 0.15, ease: "power2.in" }, 5.42);
+    window.__timelines["why"] = tl;
+  </script>
+</template>

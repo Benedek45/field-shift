@@ -1,0 +1,39 @@
+# Tooling
+.opencode/
+.playwright-mcp/
+.DS_Store
+
+# Secrets / credentials
+.env
+.agent-env
+*.netrc
+.kaggle*/
+**/credentials*
+
+# Data (downloaded or derived; keep out of git)
+data/**
+!data/raw/
+!data/processed/
+!data/**/.gitkeep
+# Study cards are curated text and belong in git; fetched source texts do not.
+!data/evidence/
+!data/evidence/cards/
+!data/evidence/cards/*.md
+*.h5
+*.hdf
+*.nc
+*.tif
+*.zip
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+.ipynb_checkpoints/
+
+# Demo video renders (never commit MP4s)
+video/renders/
+
+# HyperFrames local editor state (machine-specific paths)
+video/.hyperframes/
+video/node_modules/

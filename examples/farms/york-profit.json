@@ -1,0 +1,7 @@
+{
+  "location": {"county": "York County, NE", "irrigated": true},
+  "priorities": {"preset": "profit"},
+  "economics": {"crop_prices": {"corn": {"value": 5.5, "unit": "usd/bu"}}},
+  "weather_view": "record",
+  "free_text": "I have a corn buyer at the stated price. My actual irrigation supply still needs checking."
+}

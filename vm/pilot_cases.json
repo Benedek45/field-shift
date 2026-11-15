@@ -1,0 +1,147 @@
+[
+  {
+    "id": "story",
+    "adm_id": "US-19-169",
+    "irrigated": false,
+    "priority": "Steady income first, then soil and water.",
+    "setups": [
+      "llm",
+      "evidence",
+      "full"
+    ]
+  },
+  {
+    "id": "york",
+    "adm_id": "US-31-185",
+    "irrigated": true,
+    "priority": "Steady income first, then soil and water.",
+    "setups": [
+      "llm",
+      "evidence",
+      "full"
+    ]
+  },
+  {
+    "id": "sumner",
+    "adm_id": "US-20-191",
+    "irrigated": false,
+    "priority": "Steady income first, then soil and water.",
+    "setups": [
+      "llm",
+      "evidence",
+      "full"
+    ]
+  },
+  {
+    "id": "lubbock",
+    "adm_id": "US-48-303",
+    "irrigated": true,
+    "priority": "Steady income first, then soil and water.",
+    "setups": [
+      "llm",
+      "evidence",
+      "full"
+    ]
+  },
+  {
+    "id": "bolivar",
+    "adm_id": "US-28-011",
+    "irrigated": true,
+    "priority": "Steady income first, then soil and water.",
+    "setups": [
+      "llm",
+      "evidence",
+      "full"
+    ]
+  },
+  {
+    "id": "fresno",
+    "adm_id": "US-06-019",
+    "irrigated": true,
+    "priority": "Steady income first, then soil and water.",
+    "setups": [
+      "llm",
+      "evidence",
+      "full"
+    ]
+  },
+  {
+    "id": "story-slope12",
+    "adm_id": "US-19-169",
+    "irrigated": false,
+    "overrides": {
+      "slope_pct": 12
+    },
+    "priority": "Steady income first, then soil and water.",
+    "setups": [
+      "full"
+    ]
+  },
+  {
+    "id": "story-nitrate",
+    "adm_id": "US-19-169",
+    "irrigated": false,
+    "priority": "Nitrate leaving the field matters most; some income can go.",
+    "setups": [
+      "full"
+    ]
+  },
+  {
+    "id": "story-income",
+    "adm_id": "US-19-169",
+    "irrigated": false,
+    "priority": "Income only.",
+    "setups": [
+      "full"
+    ]
+  },
+  {
+    "id": "lubbock-dry",
+    "adm_id": "US-48-303",
+    "irrigated": false,
+    "overrides": {
+      "rain_change_pct": -30
+    },
+    "priority": "Steady income first, then soil and water.",
+    "setups": [
+      "full"
+    ]
+  },
+  {
+    "id": "known-rye",
+    "adm_id": "US-19-015",
+    "irrigated": false,
+    "priority": "Nitrate leaving the field in drainage water matters most; some income can go.",
+    "holdout_groups": [
+      "kaspar-boone-rye"
+    ],
+    "setups": [
+      "full"
+    ]
+  },
+  {
+    "id": "known-marsden",
+    "adm_id": "US-19-015",
+    "irrigated": false,
+    "priority": "Cut purchased fertilizer and herbicide while keeping profit.",
+    "holdout_groups": [
+      "marsden-farm"
+    ],
+    "setups": [
+      "full"
+    ]
+  },
+  {
+    "id": "known-fallow",
+    "adm_id": "US-08-121",
+    "irrigated": false,
+    "priority": "Best net return per unit of rain.",
+    "holdout_groups": [
+      "nielsen-akron-fallow",
+      "akron-wheat-fallow-water"
+    ],
+    "setups": [
+      "full"
+    ]
+  }
+]

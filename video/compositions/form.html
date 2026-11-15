@@ -1,0 +1,106 @@
+<template>
+  <style>
+    #root {
+      position: absolute;
+      inset: 0;
+      background: var(--ground);
+      font-family: var(--font-display);
+      color: var(--ink);
+    }
+    #f-card {
+      position: absolute;
+      left: 230px;
+      top: 96px;
+      width: 1460px;
+      height: 730px;
+      border-radius: 18px;
+      overflow: hidden;
+      background: var(--paper);
+      border: 2px solid var(--line);
+      box-shadow: 0 24px 60px rgba(23, 36, 27, 0.16);
+    }
+    #f-img {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 1460px;
+      height: auto;
+      display: block;
+    }
+    .cap {
+      position: absolute;
+      left: 230px;
+      top: 872px;
+      width: 1460px;
+      display: flex;
+      align-items: center;
+      gap: 26px;
+      font-size: 50px;
+      font-weight: 800;
+      letter-spacing: -0.01em;
+    }
+    .cap b {
+      flex: none;
+      width: 76px;
+      height: 76px;
+      border-radius: 38px;
+      background: var(--green);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 42px;
+    }
+    #f-hl {
+      position: absolute;
+      left: 6px;
+      width: 1446px;
+      height: 46px;
+      box-sizing: border-box;
+      border: 5px solid var(--amber);
+      border-radius: 8px;
+    }
+    #f-src {
+      position: absolute;
+      left: 232px;
+      top: 976px;
+      font-size: 28px;
+      color: var(--muted);
+    }
+  </style>
+  <div id="root" data-composition-id="form" data-width="1920" data-height="1080">
+    <div id="f-card" data-layout-allow-overflow>
+      <img id="f-img" src="assets/shots/questionnaire.png" alt="Questionnaire: hard limits and price table with corn at 4.60" />
+      <div id="f-hl"></div>
+    </div>
+    <div id="f-cap" class="cap">
+      <b>1</b><span>The farmer fills in one form: goals, limits, prices.</span>
+    </div>
+    <div id="f-src">
+      Real screenshot · Story County, Iowa · no new machinery · corn price changed to $4.60/bu (default $5.05)
+    </div>
+  </div>
+  <script>
+    const tl = gsap.timeline({ paused: true });
+    const shot = (window.SHOTS && window.SHOTS.questionnaire) || { width: 1140, height: 950 };
+    const shown = 1460 * (shot.height / shot.width);
+    const travel = Math.max(0, shown - 730);
+    tl.fromTo(
+      "#f-card",
+      { opacity: 0, y: 40 },
+      { opacity: 1, y: 0, duration: 0.45, ease: "expo.out" },
+      0,
+    );
+    // corn price row sits at y 880-915 of the questionnaire crop (source pixels)
+    const scale = 1460 / shot.width;
+    const hl = document.getElementById("f-hl");
+    hl.style.top = 878 * scale + "px";
+    hl.style.height = 37 * scale + "px";
+    tl.fromTo(["#f-img", "#f-hl"], { y: 0 }, { y: -travel, duration: 2.2, ease: "power2.inOut" }, 0.6);
+    tl.fromTo("#f-hl", { opacity: 0 }, { opacity: 1, duration: 0.2 }, 2.7);
+    tl.fromTo("#f-cap", { opacity: 0, filter: "blur(8px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.2, ease: "power4.out" }, 0.15);
+    tl.fromTo("#f-src", { opacity: 0 }, { opacity: 1, duration: 0.3 }, 0.3);
+    tl.to("#root", { opacity: 0, duration: 0.15, ease: "power2.in" }, 3.24);
+    window.__timelines["form"] = tl;
+  </script>
+</template>

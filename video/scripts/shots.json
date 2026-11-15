@@ -1,0 +1,53 @@
+{
+  "_comment": "Crop boxes [left, top, right, bottom] in source pixels. Source paths are relative to video/assets/raw/. Output goes to video/assets/shots/<name>.png, which the compositions show unchanged. To swap a screenshot, replace the raw file (or point 'source' at a new one), fix the box, and rerun crop_shots.py. questionnaire: live app session data/processed/app/20261115-150339-story-ia; progress, comparison, checks, qa: live app session data/processed/app/20261115-190206-story-ia (GPT-6 Luna, Story County IA, same settings, light mode, 1600 px wide).",
+  "questionnaire": {
+    "source": "live2-questionnaire-full.png",
+    "box": [
+      380,
+      1755,
+      1520,
+      2705
+    ],
+    "what": "Hard limits (no new machinery ticked) and the price table down to the farmer-changed corn price (4.60, default 5.05)"
+  },
+  "progress": {
+    "source": "live4-progress.png",
+    "box": [
+      380,
+      390,
+      1510,
+      792
+    ],
+    "what": "Live progress at 26 s: step counts and the agent tool calls (options, notes, scoreboard, study search, two study cards, scoreboard output)"
+  },
+  "checks": {
+    "source": "live4-solution-qa-full.png",
+    "box": [
+      380,
+      1365,
+      1290,
+      1772
+    ],
+    "what": "Code checks table: nine PASS"
+  },
+  "comparison": {
+    "source": "live4-solution-qa-full.png",
+    "box": [
+      380,
+      430,
+      1470,
+      752
+    ],
+    "what": "Recommended banner, summary and comparison table: current soybean-corn $422/$329 per acre, two alternatives, water inches"
+  },
+  "qa": {
+    "source": "live4-solution-qa-full.png",
+    "box": [
+      380,
+      2100,
+      1520,
+      2850
+    ],
+    "what": "Both follow-up questions and answers: alfalfa -$6 vs $422 per acre (-$34 vs $329 bad year); dry summer $392 vs $422, $316 vs $329"
+  }
+}
