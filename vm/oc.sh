@@ -2,12 +2,19 @@
 # Run the pinned OpenCode CLI in a container against one run directory:
 #   vm/oc.sh <run-dir> [opencode args...]
 # <run-dir> must hold cfg/, data/ and work/. Only variables named in
-# FIELDSHIFT_PASS_ENV (space separated) are passed through, by name.
+# FIELDSHIFT_PASS_ENV (space separated) are passed through, by name (`-e NAME`),
+# so key values never appear on a command line. fieldshift.agent.providers sets both.
 set -eu
 run_dir=$1
 shift
 env_args=""
 for name in ${FIELDSHIFT_PASS_ENV:-}; do
+    case "$name" in
+        *[!A-Za-z0-9_]* | [0-9]*)
+            echo "FIELDSHIFT_PASS_ENV must list variable names only" >&2
+            exit 2
+            ;;
+    esac
     env_args="$env_args -e $name"
 done
 name_args=""
@@ -16,8 +23,8 @@ if [ -n "${FIELDSHIFT_CONTAINER_NAME:-}" ]; then
 fi
 case "${FIELDSHIFT_ANTHROPIC:-0}${FIELDSHIFT_OPENAI:-0}" in
     *1*)
-        echo "Subscription-login adapters are not part of this repository; use an API-key model such as" \
-            "opencode-go/gpt-6-luna with OPENCODE_GO_API_KEY." >&2
+        echo "Subscription-login adapters are not part of this repository; use an API key" \
+            "(e.g. anthropic/* with ANTHROPIC_API_KEY, openrouter/* with OPENROUTER_API_KEY)." >&2
         exit 2
         ;;
 esac

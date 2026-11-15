@@ -120,10 +120,10 @@ def test_job_state_and_busy(tmp_path):
     session = core.new_session("Story County, IA", "fake/model", root=tmp_path)
     assert session.name.endswith("-story-ia") and (session.stat().st_mode & 0o777) == 0o700
     launched = []
-    core.start_job(session, "solve", launcher=lambda s, k: launched.append(k))
+    core.start_job(session, "solve", launcher=lambda s, k, **kw: launched.append(k))
     assert launched == ["solve"] and core.job_state(session)["running"]  # starting, inside the grace period
     with pytest.raises(core.JobBusy):
-        core.start_job(session, "ask", launcher=lambda s, k: launched.append(k))
+        core.start_job(session, "ask", launcher=lambda s, k, **kw: launched.append(k))
     with core.job_lock(session):
         assert core.job_state(session)["running"]
         with pytest.raises(core.JobBusy), core.job_lock(session):
@@ -333,10 +333,13 @@ def test_worker_withholds_answer_with_unmatched_figures(solved):
 def test_page_questionnaire_submit(tmp_path, monkeypatch):
     monkeypatch.setattr(core, "APP_ROOT", tmp_path)
     launched = []
-    monkeypatch.setattr(core, "spawn", lambda session, kind: launched.append((Path(session), kind)))
+    monkeypatch.setattr(core, "spawn", lambda session, kind, env=None: launched.append((Path(session), kind, env)))
+    monkeypatch.setenv("OPENCODE_GO_API_KEY", "offline-test-key")
     at = AppTest.from_file(PAGE, default_timeout=180).run()
     assert not at.exception
-    assert at.selectbox(key="model").value == "opencode-go/gpt-6-luna"
+    assert at.text_input(key="model").value == "opencode-go/gpt-6-luna"
+    assert any("OPENCODE_GO_API_KEY" in c.value for c in at.caption)
+    assert "offline-test-key" not in str([c.value for c in at.caption])
     at.selectbox(key="q_county").set_value(STORY_TEXT).run()
     assert not at.exception and not at.error
     assert [s.value for s in at.subheader] == ["Farm", "Current rotation", "What matters", "Hard limits",
@@ -351,7 +354,7 @@ def test_page_questionnaire_submit(tmp_path, monkeypatch):
     at.run()
     next(b for b in at.button if b.label == "Submit and run the advisor").click().run()
     assert not at.exception, at.exception
-    assert len(launched) == 1 and launched[0][1] == "solve"
+    assert len(launched) == 1 and launched[0][1] == "solve" and launched[0][2] == {}
     session = launched[0][0]
     public = json.loads((session / "form.json").read_text())
     assert public["limits"] == {"no_new_machinery": True}
@@ -362,9 +365,26 @@ def test_page_questionnaire_submit(tmp_path, monkeypatch):
     assert any("Ranking" in m.value or "Starting" in m.value for m in at.markdown)
 
 
+def test_page_model_picker_builds_the_worker_environment(tmp_path, monkeypatch):
+    monkeypatch.setattr(core, "APP_ROOT", tmp_path)
+    at = AppTest.from_file(PAGE, default_timeout=180).run()
+    at.selectbox(key="model_preset").set_value("OpenRouter · GPT-6 Luna").run()
+    assert at.text_input(key="model").value == "openrouter/openai/gpt-6-luna"
+    assert any("OPENROUTER_API_KEY" in w.value for w in at.warning)
+    at.text_input(key="api_key").set_value("FAKE-PAGE-KEY-123").run()
+    assert not at.warning and any("OPENROUTER_API_KEY from this page" in c.value for c in at.caption)
+    assert at.session_state["api_key_provider"] == "openrouter"
+    at.selectbox(key="model_preset").set_value("Custom endpoint (OpenAI-compatible)").run()
+    at.text_input(key="model").set_value("custom/qwen3.5:9b").run()
+    at.text_input(key="base_url").set_value("http://localhost:11434/v1").run()
+    assert any("host.docker.internal" in c.value for c in at.caption)
+    assert "FAKE-PAGE-KEY-123" not in str([c.value for c in at.caption] + [w.value for w in at.warning])
+    assert not list(tmp_path.iterdir())
+
+
 def test_page_shows_field_errors(tmp_path, monkeypatch):
     monkeypatch.setattr(core, "APP_ROOT", tmp_path)
-    monkeypatch.setattr(core, "spawn", lambda *a: pytest.fail("must not launch"))
+    monkeypatch.setattr(core, "spawn", lambda *a, **kw: pytest.fail("must not launch"))
     at = AppTest.from_file(PAGE, default_timeout=180).run()
     at.selectbox(key="q_county").set_value(STORY_TEXT).run()
     at.multiselect(key="q_lim_include_crops").select("oats")

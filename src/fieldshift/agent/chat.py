@@ -30,8 +30,6 @@ import time
 from datetime import UTC, datetime
 from pathlib import Path
 
-from dotenv import load_dotenv
-
 from fieldshift.agent import (
     brief,
     chat_forms,
@@ -39,6 +37,7 @@ from fieldshift.agent import (
     evidence,
     farms,
     pilot,
+    providers,
     report,
     transcripts,
 )
@@ -238,7 +237,7 @@ def scrub_credentials(run_dir, values, *, keep_session=True):
 
 
 def auth_errors(model):
-    return (pilot.SubscriptionModelError,)
+    return (providers.ProviderError,)
 
 
 # -- the agent ----------------------------------------------------------------------------------
@@ -276,23 +275,23 @@ class OpenCodeAgent:
 
     def turn(self, run_dir, message, *, session_id, keep_session, farm_id, port, token):
         run_dir = Path(run_dir)
-        pilot.auth_module(self.model)  # refuses subscription-login models
+        model_route = providers.resolve(self.model)  # names the missing key; refuses unknown providers
         marker = run_dir / ".turn-in-progress"
         marker.write_text(str(time.time()))
         name = f"fieldshift-chat-{secrets.token_hex(6)}"
-        env = dict(os.environ, FARMSIM_URL=f"http://host.docker.internal:{port}", FARMSIM_FARM=farm_id,
-                   FARMSIM_TOKEN=token, FIELDSHIFT_CHAT="1", FIELDSHIFT_CONTAINER_NAME=name)
-        values, result = [], {"status": "failed", "exit_code": None, "session_id": None}
+        env = providers.launch_env(model_route, extra={
+            "FARMSIM_URL": f"http://host.docker.internal:{port}", "FARMSIM_FARM": farm_id, "FARMSIM_TOKEN": token,
+            "FIELDSHIFT_CHAT": "1"})
+        env["FIELDSHIFT_CONTAINER_NAME"] = name
+        values, result = [], {"status": "failed", "exit_code": None, "session_id": None,
+                              "route": model_route.describe()}
         started = time.perf_counter()
         finished = False
         try:
-            load_dotenv(REPO / ".agent-env", override=False)
-            key = os.environ.get("OPENCODE_GO_API_KEY", "")
-            values = fragments([key] if key else [])
-            env.update(OPENCODE_API_KEY=key,
-                       FIELDSHIFT_PASS_ENV="OPENCODE_API_KEY FARMSIM_URL FARMSIM_FARM FARMSIM_TOKEN FIELDSHIFT_CHAT")
+            values = fragments(model_route.secrets())
+            providers.write_config(run_dir, model_route)
             command = [str(pilot.VM / "oc.sh"), str(run_dir), "run", "--standalone", "--agent", "farm-advisor",
-                       "--model", self.model, "--format", "json", "--auto",
+                       "--model", model_route.opencode_model, "--format", "json", "--auto",
                        *(["--session", session_id] if session_id else []), message]
             with open(run_dir / "events.jsonl", "w") as out, open(run_dir / "stderr.log", "w") as err:
                 try:

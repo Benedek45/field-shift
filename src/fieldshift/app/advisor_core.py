@@ -13,12 +13,20 @@ import time
 from datetime import UTC, datetime
 from pathlib import Path
 
-from fieldshift.agent import chat, checks, farms, form, report
+from fieldshift.agent import chat, checks, farms, form, providers, report
 from fieldshift.sim.economics import ACRES_HA, PARTS
 
 REPO = Path(__file__).resolve().parents[3]
 APP_ROOT = Path(os.environ.get("FIELDSHIFT_APP_ROOT", REPO / "data/processed/app"))
-MODELS = (chat.DEFAULT_MODEL, "opencode-go/deepseek-v4.1-flash", "opencode-go/glm-5.3-flash")
+# Sidebar presets: label -> model. "Custom endpoint" and "Other" take the model from the text field.
+MODEL_PRESETS = {
+    "OpenCode Go · GPT-6 Luna": chat.DEFAULT_MODEL,
+    "OpenRouter · GPT-6 Luna": "openrouter/openai/gpt-6-luna",
+    "Anthropic API · Claude Sonnet 5.5": "anthropic/claude-sonnet-5-5",
+    "OpenAI API · GPT-6 Luna": "openai/gpt-6-luna",
+    "Custom endpoint (OpenAI-compatible)": "custom/",
+    "Other (type provider/model)": "",
+}
 VERSION = "farm-questionnaire-v1"
 START_GRACE_S = 120  # a job file in "starting" state counts as running until its worker takes the lock
 
@@ -410,25 +418,66 @@ def job_state(session):
     return dict(job, running=running)
 
 
-def spawn(session, kind):
+def key_variable(model):
+    """The variable a key typed on the page fills for this model, or None."""
+    try:
+        provider, _ = providers._split(model)
+    except providers.ProviderError:
+        return None
+    if provider == providers.CUSTOM:
+        return providers.CUSTOM_KEY_VAR
+    if provider in providers.LOCAL_DISCOVERY:
+        return next(iter(providers.LOCAL_DISCOVERY[provider][1]), None)
+    entry = providers.load_catalog()["providers"].get(provider)
+    return entry["env"][0] if entry else None
+
+
+def model_environment(model, typed_key="", base_url="", key_model=None, environ=None):
+    """What the worker for `model` gets from the page, and whether the model can run.
+
+    typed_key was entered for key_model (default: model) and is only used when both have the same
+    provider. Returns {"env": names -> values for the worker process only, "key_variable", "route"
+    (names only) or "error", "detected": key names found in the environment and key files}.
+    Values are never part of the returned description."""
+    base = providers.key_environment(environ)
+    extra = {}
+    variable = key_variable(model)
+    same = (key_model or model).split("/", 1)[0] == model.split("/", 1)[0]
+    if typed_key and variable and same:
+        extra[variable] = typed_key
+    if base_url and model.split("/", 1)[0] in (providers.CUSTOM, *providers.LOCAL_DISCOVERY):
+        extra[providers.BASE_URL_VAR] = base_url
+    out = {"env": extra, "key_variable": variable, "route": None, "error": None,
+           "detected": providers.detected_key_names(base), "from_page": sorted(extra)}
+    try:
+        out["route"] = providers.resolve(model, {**base, **extra}).describe()
+    except providers.ProviderError as exc:
+        out["error"] = str(exc)
+    return out
+
+
+def spawn(session, kind, env=None):
+    """Start the worker; env (keys typed on the page) goes only into the child's environment."""
     log = open(Path(session) / "worker.log", "a")  # noqa: SIM115 — handed to the child process
     os.chmod(log.name, 0o600)
-    log.write(f"{datetime.now(UTC).isoformat(timespec='seconds')} launching {kind} job with {sys.executable}\n")
+    log.write(f"{datetime.now(UTC).isoformat(timespec='seconds')} launching {kind} job with {sys.executable}"
+              f"{' (page-provided: ' + ', '.join(sorted(env)) + ')' if env else ''}\n")
     log.flush()
     # Record the exit status even when the worker fails before writing job.json.
     script = '"$0" -u -m fieldshift.app.advisor_worker "$1" "$2"; echo "worker exited with status $?"'
     proc = subprocess.Popen(["/bin/sh", "-c", script, sys.executable, kind, str(session)], cwd=REPO,
-                            stdin=subprocess.DEVNULL, stdout=log, stderr=subprocess.STDOUT, start_new_session=True)
+                            env={**os.environ, **(env or {})}, stdin=subprocess.DEVNULL, stdout=log,
+                            stderr=subprocess.STDOUT, start_new_session=True)
     log.write(f"worker pid {proc.pid}\n")
     log.close()
 
 
-def start_job(session, kind, launcher=None):
+def start_job(session, kind, launcher=None, env=None):
     """Start one background job; refuses while another job of this session is running."""
     if job_state(session)["running"]:
         raise JobBusy("The advisor is still working on this session; wait for it to finish.")
     write_json(Path(session) / "job.json", {"kind": kind, "state": "starting", "started": time.time()})
-    (launcher or spawn)(session, kind)
+    (launcher or spawn)(session, kind, env=env or {})
 
 
 @contextlib.contextmanager

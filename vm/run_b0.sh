@@ -4,9 +4,7 @@
 # (completed episodes are kept, quota-hit episodes are moved aside and rerun).
 set -u
 cd "$(dirname "$0")/.."
-set -a
-. ./.agent-env
-set +a
+# Model keys and FARMSIM_TOKEN: environment, or fieldshift.env / .env / .agent-env (read by Python).
 OUT="$HOME/.opencode-vm/fieldshift/runs/bench_b0"
 STOP_AT=${B0_STOP_AT:-$(date -j -f "%Y-%m-%d %H:%M" "2026-11-15 20:00" +%s)}
 mkdir -p "$OUT"

@@ -17,7 +17,7 @@ import traceback
 from datetime import UTC, datetime
 from pathlib import Path
 
-from fieldshift.agent import advise, chat, checks, pilot
+from fieldshift.agent import advise, chat, checks, pilot, providers
 from fieldshift.app import advisor_core as core
 from fieldshift.app import profiles
 
@@ -61,8 +61,8 @@ def readable(exc):
     """A message a farmer can act on; never a traceback."""
     text = str(exc).strip()[:400]
     name = type(exc).__name__
-    if name in ("AuthError", "SubscriptionModelError"):
-        return f"The model login is not usable: {text}"
+    if isinstance(exc, providers.ProviderError):
+        return f"The advisor model cannot run: {text}"
     if isinstance(exc, ValueError):
         return f"The questionnaire values were rejected: {text}"
     if isinstance(exc, OSError):

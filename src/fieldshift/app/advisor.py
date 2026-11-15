@@ -49,7 +49,8 @@ def defaults_for(adm, irrigated):
 
 def init_state():
     values, risk = core.preset_values("steady")
-    base = {"session": None, "model": core.MODELS[0], "profile": None, "profile_choice": NO_PROFILE,
+    base = {"session": None, "model": core.chat.DEFAULT_MODEL, "model_preset": next(iter(core.MODEL_PRESETS)),
+            "api_key": "", "api_key_provider": None, "base_url": "", "profile": None, "profile_choice": NO_PROFILE,
             "profile_new": "", "profile_note": "", "profile_msg": None, "q_water": "Rainfed", "q_well_known": False,
             "q_well_in": 12.0, "q_rot_mode": "inferred", "q_rotation": [], "q_rot_init": None, "q_preset": "steady",
             "q_risk": risk, "q_lim_floor": False, "q_lim_floor_pct": 80, "q_lim_no_new_machinery": False,
@@ -276,12 +277,16 @@ def submit(defaults):
     if errors:
         ss.q_errors = errors
         st.rerun()
+    access = model_access(ss.model)
+    if access["error"]:
+        ss.q_errors = {"submit": "The advisor model cannot run: " + access["error"]}
+        st.rerun()
     path = core.new_session(defaults["label"], ss.model, profile=ss.profile)
     core.write_json(path / "form.json", public)
     core.write_json(path / "questionnaire.json", snapshot())
     if ss.profile:
         profiles.record_submission(ss.profile, path, snapshot(), public)
-    core.start_job(path, "solve")
+    core.start_job(path, "solve", env=access["env"])
     ss.q_errors, ss.session = {}, str(path)
     st.rerun()
 
@@ -427,8 +432,13 @@ def ask(session, question):
     n = len(core.qa_rows(session)) + 1
     core.write_json(Path(session) / "qa/pending.json", {"n": n, "question": question.strip()[:4000],
                                                         "asked": time.time()})
+    state = core.read_json(Path(session) / "session.json", {}) or {}
+    access = model_access(state.get("model") or ss.model)
+    if access["error"]:
+        st.warning("Questions cannot run: " + access["error"])
+        return
     try:
-        core.start_job(session, "ask")
+        core.start_job(session, "ask", env=access["env"])
     except core.JobBusy as exc:
         st.warning(str(exc))
         return
@@ -582,15 +592,57 @@ def memory_section(session):
                    "what you wrote.")
 
 
+# -- model and key --------------------------------------------------------------------------
+
+def model_access(model):
+    """Worker environment and status for a model; the typed key only counts for the provider it was typed for."""
+    key_model = f"{ss.api_key_provider}/x" if ss.api_key_provider else model
+    return core.model_environment(model, ss.api_key, ss.base_url, key_model=key_model)
+
+
+def apply_model_preset():
+    model = core.MODEL_PRESETS[ss.model_preset]
+    if model:
+        ss.model = model
+
+
+def remember_key_provider():
+    ss.api_key_provider = ss.model.split("/", 1)[0] if ss.api_key else None
+
+
+def model_picker():
+    st.selectbox("Provider", list(core.MODEL_PRESETS), key="model_preset", on_change=apply_model_preset,
+                 help="Pick a preset, then edit the model if you like. Used for new submissions.")
+    st.text_input("Model (provider/model id)", key="model",
+                  help="For example openrouter/anthropic/claude-sonnet-5.5, anthropic/claude-sonnet-5-5, "
+                       "custom/qwen3.5:9b. See README 'Choosing a model and API key'.")
+    if ss.model.split("/", 1)[0] in ("custom", "ollama", "lmstudio"):
+        st.text_input("Endpoint URL (FIELDSHIFT_BASE_URL)", key="base_url", placeholder="http://localhost:11434/v1",
+                      help="An OpenAI-compatible server. localhost is rewritten to host.docker.internal so the "
+                           "advisor container can reach this machine.")
+    variable = core.key_variable(ss.model)
+    st.text_input(f"API key ({variable})" if variable else "API key", key="api_key", type="password",
+                  on_change=remember_key_provider,
+                  help="Kept only in this browser session's memory and handed to the advisor process through its "
+                       "environment. Never saved to disk. Leave empty to use the environment or fieldshift.env.")
+    access = model_access(ss.model)
+    st.caption("Keys found in the environment or key files: " + (", ".join(access["detected"]) or "none"))
+    if access["error"]:
+        st.warning(access["error"])
+    else:
+        route = access["route"]
+        source = ", ".join(access["from_page"]) + " from this page" if access["from_page"] else \
+            (", ".join(route["key_names"]) or "no key")
+        st.caption(f"Ready: {route['provider']} ({source}). " + " ".join(route["notes"]))
+
+
 # -- page ------------------------------------------------------------------------------------
 
 def sidebar():
     with st.sidebar:
         profile_sidebar()
         st.divider()
-        st.selectbox("Model", core.MODELS, key="model",
-                     help="Used for new submissions.")
-        st.caption("opencode-go models use the OpenCode Go API key OPENCODE_GO_API_KEY (weekly quota).")
+        model_picker()
         st.button("New questionnaire", on_click=new_questionnaire, width="stretch")
         sessions = core.list_sessions()
         if sessions:

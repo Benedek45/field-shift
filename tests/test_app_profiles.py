@@ -153,7 +153,7 @@ def test_proposals_need_farmer_words_and_a_click(remembered):
 
 def test_page_profile_prefill_and_approve(remembered, monkeypatch):
     monkeypatch.setattr(core, "APP_ROOT", remembered["root"])
-    monkeypatch.setattr(core, "spawn", lambda *a: None)
+    monkeypatch.setattr(core, "spawn", lambda *a, **kw: None)
     session = remembered["session"]
     items = profiles.proposals(session)
     for p in items:

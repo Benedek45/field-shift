@@ -4,7 +4,6 @@ import argparse
 import contextlib
 import hashlib
 import json
-import os
 import secrets
 import shutil
 import subprocess
@@ -14,8 +13,6 @@ from datetime import UTC, datetime
 from pathlib import Path
 from types import SimpleNamespace
 
-from dotenv import load_dotenv
-
 from fieldshift.agent import (
     brief,
     checks,
@@ -23,6 +20,7 @@ from fieldshift.agent import (
     farms,
     form,
     pilot,
+    providers,
     report,
     transcripts,
 )
@@ -85,7 +83,7 @@ def audit_decision(runtime, fid, decision, fallback_board):
 EPISODE_TIMEOUT = 1500
 
 
-def episode(out, normal, fid, farm_brief, token, port, model, key):
+def episode(out, normal, fid, farm_brief, token, port, model, model_route):
     args = SimpleNamespace(out=out / "episode", evidence_root=REPO / "data/evidence",
                            agent_prompt="farm-advisor-v1.md", redo=False, timeout=EPISODE_TIMEOUT,
                            container_service=f"http://host.docker.internal:{port}")
@@ -96,7 +94,7 @@ def episode(out, normal, fid, farm_brief, token, port, model, key):
     transcripts.OUTPUT_CHARS = 10_000_000
     run_dir = args.out / f"farmer-form__full__{pilot.slug(model)}__r0"
     try:
-        meta = pilot.run_one(job, args, prompt, token, key)
+        meta = pilot.run_one(job, args, prompt, token, model_route)
         text = run_dir / "transcript.jsonl"
         if text.exists():
             shutil.copyfile(text, out / "transcript.jsonl")
@@ -118,17 +116,8 @@ def run(input_path, out, *, model=DEFAULT_MODEL, agent_episode=None, on_service=
     """agent_episode replaces `episode` (same arguments and return value), e.g. to keep the OpenCode
     session for follow-up questions; on_service(runtime, farm_id) runs once the farm is registered."""
     started = time.perf_counter()
+    model_route = providers.resolve(model)  # ProviderError (a ValueError) names a missing key variable
     normal = form.load(input_path)
-    load_dotenv(REPO / ".agent-env", override=False)
-    key = os.environ.get("OPENCODE_GO_API_KEY", "")
-    try:
-        pilot.auth_module(model)
-    except pilot.SubscriptionModelError as exc:
-        raise farms.FarmError(str(exc)) from exc
-    if not model.startswith("opencode-go/"):
-        raise farms.FarmError("Model must be opencode-go/<model>, for example opencode-go/gpt-6-luna")
-    if not key:
-        raise farms.FarmError("No usable advisor model credentials. Set OPENCODE_GO_API_KEY for opencode-go models.")
     out = Path(out).resolve()
     out.mkdir(parents=True, exist_ok=True, mode=0o700)
     if any(out.iterdir()):
@@ -176,7 +165,7 @@ def run(input_path, out, *, model=DEFAULT_MODEL, agent_episode=None, on_service=
         t = time.perf_counter()
         try:
             decision, narrative, agent_meta, calls = (agent_episode or episode)(
-                out, normal, fid, farm_brief, token, port, model, key)
+                out, normal, fid, farm_brief, token, port, model, model_route)
         except Exception as exc:  # noqa: BLE001 — record failure; never substitute a ranking
             agent_meta = {"status": "failed", "error_type": type(exc).__name__}
             decision = {}
@@ -234,7 +223,7 @@ def run(input_path, out, *, model=DEFAULT_MODEL, agent_episode=None, on_service=
             (out / "transcript.jsonl").write_text(json.dumps({"type": "harness", "error": "No model transcript produced"}) + "\n")
     times["total_seconds"] = time.perf_counter() - started
     receipt = {"harness_version": VERSION, "simulator_version": SIMULATOR_VERSION,
-               "model_requested": model, "model_used": model,
+               "model_requested": model, "model_used": model, "route": model_route.describe(),
                "mode": mode, "timings": times, "checks": checked, "episode": agent_meta,
                "recommendation": choice, "no_recommendation_reason": no_recommendation_reason,
                "form_sha256": hashlib.sha256(Path(input_path).read_bytes()).hexdigest(),

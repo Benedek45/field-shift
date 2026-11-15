@@ -4,7 +4,7 @@ import json
 
 import pytest
 
-from fieldshift.agent import advise, checks, farms, outlook, pilot, report
+from fieldshift.agent import advise, checks, outlook, pilot, providers, report
 
 
 @pytest.fixture(autouse=True)
@@ -13,7 +13,6 @@ def offline(monkeypatch):
         raise AssertionError("Offline test must not fetch an outlook")
     monkeypatch.setattr(outlook, "fetch", unavailable)
     monkeypatch.setattr(advise, "episode", unavailable)
-    monkeypatch.setattr(advise, "load_dotenv", lambda *args, **kwargs: None)
 
 
 def source_form(tmp_path):
@@ -88,9 +87,9 @@ def test_passing_decision_keeps_recommendation(tmp_path, monkeypatch):
     assert "Operating return $/acre/year" in text and "Field water inches/year" in text and "$/ha" not in text
 
 
-def test_go_model_without_credentials_fails_before_writing(tmp_path, monkeypatch):
-    monkeypatch.delenv("OPENCODE_GO_API_KEY", raising=False)
+def test_go_model_without_credentials_fails_before_writing(tmp_path):
     out = tmp_path / "no-credentials"
-    with pytest.raises(farms.FarmError, match="No usable advisor model credentials"):
+    with pytest.raises(providers.MissingKeyError, match="OPENCODE_API_KEY") as caught:
         advise.run(source_form(tmp_path), out, model="opencode-go/fake")
+    assert "OPENCODE_GO_API_KEY" in str(caught.value)
     assert not out.exists()

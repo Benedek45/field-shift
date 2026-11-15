@@ -12,7 +12,6 @@ import pytest
 DATA_MARKER = Path(__file__).resolve().parents[1] / "data/processed/weather/power_county_daily.json"
 # These fail without the data through a symptom other than a missing-file error.
 INDIRECT = {
-    "tests/test_agent_advise.py::test_go_model_without_credentials_fails_before_writing",
     "tests/test_agent_outlook.py::test_failure_never_breaks_brief",
     "tests/test_app_advisor.py::test_page_questionnaire_submit",
     "tests/test_app_advisor.py::test_page_shows_field_errors",
@@ -40,3 +39,12 @@ def pytest_runtest_makereport(item, call):
     if item.nodeid in INDIRECT or _missing_data_error(call.excinfo):
         report.outcome = "skipped"
         report.longrepr = (str(item.path), item.location[1] or 0, REASON)
+
+
+@pytest.fixture(autouse=True)
+def no_local_model_keys(monkeypatch):
+    """Offline tests never see this machine's model keys or key files."""
+    from fieldshift.agent import providers
+    monkeypatch.setattr(providers, "KEY_FILES", ())
+    for name in providers.known_key_names() | {"FARMSIM_TOKEN"}:
+        monkeypatch.delenv(name, raising=False)

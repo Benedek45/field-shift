@@ -79,12 +79,11 @@ every possible year. Water importance means field ET, not pumped irrigation.
 
 ### Model, checks and files
 
-Default: `opencode-go/gpt-6-luna` with `OPENCODE_GO_API_KEY` in the environment or
-gitignored `.agent-env`, plus the existing Colima farming image/launcher.
-Other `opencode-go/<model>` aliases work the same way. Subscription-login models
-(`anthropic/*`, `openai/*`) are refused: the Opus and live Luna runs reported in this
-repository were run through the author's own subscription login; that adapter is not part of this repository. If no usable model is available, the command stops before
-writing output. If the advisor fails or its decision does not pass every check,
+Default: `opencode-go/gpt-6-luna`, plus the existing Colima farming image/launcher.
+Any model with an API key works: `--model openrouter/openai/gpt-6-luna`,
+`anthropic/claude-sonnet-5-5`, `custom/<model>` and so on (see "Choosing a model and
+API key" below). If the model's key is missing, the command names the variable and
+stops before writing output. If the advisor fails or its decision does not pass every check,
 the tool gives no answer; it never substitutes the code ranking for advice.
 
 The form, **not the LLM**, sets weights and hard limits. Our measured
@@ -117,6 +116,60 @@ subscription/quota cost. Episode token usage and reported cost are in `run.json`
 provider limits still apply. The free Open-Meteo API is noncommercial and requires
 Open-Meteo/ECMWF CC-BY4 attribution. This tool supports, does not replace your judgment.
 
+## Choosing a model and API key
+
+The advisor runs in OpenCode inside the container, so any provider OpenCode knows works.
+Write the model as `<provider>/<model id>`; the provider is the part before the first
+slash. `src/fieldshift/agent/providers.py` decides how it is served and which variable
+holds the key, from a vendored copy of the [models.dev](https://models.dev) catalog
+(`provider_catalog.json`, 324 providers, fetched 2026-11-15; refresh with
+`uv run python -m fieldshift.agent.providers --update-catalog`).
+
+| Provider | Model example | Key variable |
+| --- | --- | --- |
+| OpenCode Go | `opencode-go/gpt-6-luna` | `OPENCODE_API_KEY` (or our alias `OPENCODE_GO_API_KEY`) |
+| OpenRouter | `openrouter/openai/gpt-6-luna` | `OPENROUTER_API_KEY` |
+| Anthropic API | `anthropic/claude-sonnet-5-5` | `ANTHROPIC_API_KEY` |
+| OpenAI API | `openai/gpt-6-luna` | `OPENAI_API_KEY` |
+| Google | `google/gemini-2.5-pro` | `GOOGLE_API_KEY`, `GOOGLE_GENERATIVE_AI_API_KEY` or `GEMINI_API_KEY` |
+| xAI, DeepSeek, Mistral, Groq | `xai/grok-4.7`, `deepseek/deepseek-v4-flash`, ... | `XAI_API_KEY`, `DEEPSEEK_API_KEY`, `MISTRAL_API_KEY`, `GROQ_API_KEY` |
+| Any other catalog provider | `<id>/<model>` | as listed in `provider_catalog.json` |
+| Custom OpenAI-compatible server | `custom/<model id>` | `FIELDSHIFT_BASE_URL`, optional `FIELDSHIFT_API_KEY` |
+| Ollama / LM Studio on this machine | `ollama/qwen3.5:9b` | none (`FIELDSHIFT_BASE_URL` overrides the port) |
+
+Keys are read from the environment first, then from the gitignored `fieldshift.env`
+(copy `fieldshift.env.example`), `.env` and `.agent-env`. `uv run python -m
+fieldshift.agent.providers` lists the variable names it found; `--check <model>` shows
+how a model would be served. A missing key is reported with the variable's name.
+
+```bash
+# OpenRouter: the full OpenRouter model ID follows the provider, slashes included
+export OPENROUTER_API_KEY=...
+uv run python -m fieldshift.agent.advise examples/farms/story-steady.json \
+  --model openrouter/anthropic/claude-sonnet-5.5
+
+# Any OpenAI-compatible server, here a local Ollama
+export FIELDSHIFT_BASE_URL=http://localhost:11434/v1
+uv run python -m fieldshift.agent.advise examples/farms/story-steady.json --model custom/qwen3.5:9b
+```
+
+How the key is handled: the launcher `vm/oc.sh` receives it in its process environment
+and passes it into the container by name (`docker run -e NAME`), so it never appears on
+a command line. The run's `opencode.json` holds only variable names, the model and
+`small_model` (set to the same model, so OpenCode's hidden title and summary calls stay
+on the provider that has a key). `localhost` in `FIELDSHIFT_BASE_URL` is rewritten to
+`host.docker.internal`, because inside the container `localhost` is the container itself.
+
+Not supported: subscription logins (Claude Pro/Max, ChatGPT Plus/Pro; `anthropic/*` and
+`openai/*` without an API key are refused with that explanation), GitHub Copilot (device
+login) and Vertex (credential file). Providers that need several variables (Azure, Bedrock,
+Cloudflare) get every listed variable that is set; they were not tested. vLLM's own
+discovery starts with tools disabled, so use the custom route for vLLM.
+
+The measured results in this repository and the paper used OpenCode Go models and the
+author's own subscription login (Claude Opus 5.5, and GPT-6 Luna for the live runs of
+2026-11-15). Other models and providers have not been evaluated with the benchmark.
+
 ## Questionnaire app
 
 ```bash
@@ -131,9 +184,13 @@ elapsed time, simulator calls, a recommendation and two alternatives only when
 the advisor's decision passes every check. Otherwise no answer is shown; the code
 ranking is audit-only.
 
-The default model is `opencode-go/gpt-6-luna`; the sidebar also offers other
-OpenCode Go models. They use `OPENCODE_GO_API_KEY` like the CLI: no credentials
-enter the questionnaire or its saved files. The existing VM image and Docker context
+The default model is `opencode-go/gpt-6-luna`. The sidebar has a provider picker
+(OpenCode Go, OpenRouter, Anthropic API, OpenAI API, custom endpoint), a free-text
+model field, an endpoint field for custom servers and a password field for the key.
+A typed key stays in the browser session's memory and reaches the advisor process
+only through its environment; it is never saved and is used only for the provider it
+was typed for. The sidebar lists the key variable names (not values) found in the
+environment and key files. No credentials enter the questionnaire or its saved files. The existing VM image and Docker context
 must be available (see the advising setup above). The live app runs shown in the demo
 video used GPT-6 Luna run through the author's own subscription login; that adapter is not part of this repository.
 
@@ -236,8 +293,8 @@ recommendation and names the failed checks. Follow-ups the farmer can ask:
   (confirm, then rerank). Prices that cannot matter (water on a rainfed field) are said so.
 - "Why not alfalfa?": the alternative simulated against the choice.
 
-**Models.** Default `opencode-go/gpt-6-luna` (`chat.DEFAULT_MODEL`) with the Go API key
-`OPENCODE_GO_API_KEY`; other `opencode-go/<model>` aliases work too. The live chat check was
+**Models.** Default `opencode-go/gpt-6-luna` (`chat.DEFAULT_MODEL`); `--model` takes any
+model from "Choosing a model and API key". The live chat check was
 made with Claude Opus 5.5 run through the author's own subscription login; that adapter is not part of this repository.
 
 **Continuity and credentials.** One OpenCode session per chat: each farmer turn is

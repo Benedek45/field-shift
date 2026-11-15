@@ -16,8 +16,6 @@ import time
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
-from dotenv import load_dotenv
-
 from fieldshift.agent import farms, pilot, transcripts
 from fieldshift.agent.scoreboard import _fingerprint
 from fieldshift.bench.common import DATA, ROOT, RUNS, local_service
@@ -68,7 +66,6 @@ def main():
     parser.add_argument("--pair", help="Optional opaque pair ID")
     parser.add_argument("--per-family", type=int, default=3, help="First N fixed pairs per family; 0 = all")
     args = parser.parse_args()
-    load_dotenv(ROOT / ".agent-env", override=False)
     keys = json.loads(args.keys.read_text())
     pairs = [p for p in keys["pairs"] if not args.pair or p["id"] == args.pair]
     if not args.pair and args.per_family:
@@ -85,6 +82,7 @@ def main():
         args.out = RUNS.with_name("bench_smoke")
     if not pairs:
         parser.error("No matching pairs")
+    routes = {model: pilot.route(model) for model in args.models}  # fail before any work if a key is missing
     fingerprint = _fingerprint()
     if any(p["fingerprint"] != fingerprint for p in pairs):
         parser.error("Simulator/data fingerprint changed; regenerate keys with --recompute")
@@ -137,7 +135,7 @@ def main():
                 return None
             if _fingerprint() != fingerprint:
                 raise RuntimeError("Simulator/data changed during run; preserve existing episodes and regenerate keys")
-            meta = pilot.run_one(job, args, briefs[job["case"]["id"]], token, os.environ["OPENCODE_GO_API_KEY"])
+            meta = pilot.run_one(job, args, briefs[job["case"]["id"]], token, routes[job["model"]])
             errors = " ".join(meta.get("trace", {}).get("errors", []))
             if PROVIDER_LIMIT.search(errors):
                 # Quota exhaustion is infrastructure: keep the evidence, free the slot for a rerun.

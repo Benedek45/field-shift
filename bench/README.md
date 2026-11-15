@@ -206,8 +206,9 @@ three repeats × four models = **432 episodes**. `--per-family 0` includes all
 generated valid pairs. Selection is fixed before model outputs, not based on
 smoke success. Read `contract.json` for the exact included pair IDs.
 
-Credentials are read privately from the existing gitignored `.agent-env` or
-environment. The original smoke used port **8611**; the full-run registration
+Credentials are read privately from the environment or the gitignored key files
+(`fieldshift.env`, `.env`, `.agent-env`); `--models` accepts any model from the main
+README's "Choosing a model and API key", and every model's key is checked before the run starts. The original smoke used port **8611**; the full-run registration
 used separate owned ports 8611–8614 (see EXPERIMENTS.md). The runner starts/stops its own service
 with a new in-memory token and separate registry/cache/log. It never restarts
 8601. Do not run multiple benchmark processes on the same port. Existing completed

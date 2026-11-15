@@ -358,9 +358,9 @@
 - The Claude Opus 5.5 runs (`anthropic/claude-opus-5-5`: the A2/A3 matrices, the Opus arm of B0, the live
   harness and chat checks) and the live GPT-6 Luna runs of 2026-11-15 (`openai/gpt-6-luna`: advise, app and
   demo-video runs, made after the OpenCode Go weekly limit was exhausted) were run through the author's own
-  subscription login; that adapter is not part of this repository. Here `anthropic/*` and `openai/*` models are
-  refused (`pilot.SubscriptionModelError`); use an API-key model such as `opencode-go/gpt-6-luna` with
-  `OPENCODE_GO_API_KEY`.
+  subscription login; that adapter is not part of this repository. Here `anthropic/*` and `openai/*` work
+  only with an API key (`ANTHROPIC_API_KEY`, `OPENAI_API_KEY`); without one they are refused
+  (`providers.SubscriptionModelError`). See "Model routing" below.
 - Every subscription run recorded the provider-reported served model (`meta.json` / `run.json` `served_model`)
   and its credential copy was removed after the episode.
 - Fix found during those runs (applies to all models): Luna gave up when the >51 KB scoreboard output was cut
@@ -532,3 +532,29 @@
   lines in REPORT.md are in $/acre, inches and lb N/acre too.
 - Bench keys were already stale before this change (fingerprint `ec1cb708...` differs from `keys.json`;
   needs `bench.generate --recompute`), unchanged by it.
+
+## Model routing (`fieldshift.agent.providers`, 2026-11-15 ~21:00)
+
+- One place decides how `<provider>/<model id>` is served: `providers.resolve(model, environ)` returns a `Route`
+  (OpenCode model reference, key variable names, provider block). Used by `pilot.run_one`, `advise.run`,
+  `chat.OpenCodeAgent.turn`, `bench.run` and the app (`advisor_core.model_environment`). Key variables come from
+  the vendored models.dev table `agent/provider_catalog.json` (324 providers, fetched 2026-11-15; refresh with
+  `--update-catalog`; models.dev answers 403 to urllib's default User-Agent). `OPENCODE_GO_API_KEY` is an alias
+  for opencode-go's `OPENCODE_API_KEY` (shared with the `opencode` Zen provider).
+- Keys: environment first, then gitignored `fieldshift.env`, `.env`, `.agent-env` (`providers.key_environment`).
+  The value goes only into the launcher's process environment; `vm/oc.sh` passes `-e NAME` and refuses any
+  `FIELDSHIFT_PASS_ENV` entry that is not a variable name. `opencode.json` holds names, `model` and
+  `small_model` only. Tests (`tests/conftest.py`) clear all known key variables and key files.
+- Verified in the image (OpenCode 2.3.0): with `OPENROUTER_API_KEY` set, `opencode models` lists 360
+  `openrouter/...` IDs (nested slashes); `small_model` appears in `debug config` as `agents.title.model`;
+  a `providers.custom` block with `package: @opencode/ai/providers/openai-compatible` is active without a key.
+  `host.docker.internal:11434` reaches the host's Ollama from `colima-rosetta`. Colima cannot bind-mount
+  `/private/var/folders/...` (the opencode temp dir); use `~/.opencode-vm/...` for scratch run dirs.
+- Live probes 2026-11-15 (`~/.opencode-vm/fieldshift/runs/provider-probes/`, one try each): OpenRouter with a
+  fake key -> `provider.auth` 401 "User not found." from OpenRouter in 1.7 s (routing works); Go -> 429
+  `provider.go-limit` weekly limit (key accepted; no advise run); `custom/qwen3.5:9b` via local Ollama -> "Ready",
+  exit 0, 113.8 s. No key value in any probe file. No OpenRouter, Anthropic or OpenAI API key exists on this
+  machine, so no full episode has been run with them.
+- Custom model IDs are slugged for OpenCode's model key (`custom/qwen3.5:9b` -> `custom/qwen3.5-9b`,
+  `modelID` keeps the original). Azure/Bedrock/Cloudflare get every listed variable that is set (untested);
+  Copilot, Vertex and vLLM discovery are refused with an explanation.

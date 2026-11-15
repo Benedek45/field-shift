@@ -3,9 +3,7 @@
 # Cheap models run side by side, two containers each; Opus runs serially.
 set -u
 cd "$(dirname "$0")/.."
-set -a
-. ./.agent-env
-set +a
+# Model keys and FARMSIM_TOKEN: environment, or fieldshift.env / .env / .agent-env (read by Python).
 OUT="$HOME/.opencode-vm/fieldshift/runs/a2"
 CASES="story york sumner lubbock bolivar fresno story-slope12 story-nitrate story-income lubbock-dry known-rye known-marsden"
 run_model() {

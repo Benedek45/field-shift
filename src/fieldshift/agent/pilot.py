@@ -18,7 +18,7 @@ import urllib.request
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
-from fieldshift.agent import evidence, farms, transcripts
+from fieldshift.agent import evidence, farms, providers, transcripts
 
 REPO = Path(__file__).resolve().parents[3]
 VM = REPO / "vm"
@@ -185,27 +185,22 @@ def score(run_dir, cards, trace):
     return result
 
 
-SUBSCRIPTION_PREFIXES = ("anthropic/", "openai/")
+SubscriptionModelError = providers.SubscriptionModelError
 
 
-class SubscriptionModelError(ValueError):
-    """The model needs a subscription-login adapter, which is not part of this repository."""
+def route(model, environ=None):
+    """How the model is served (provider, key variable names); raises providers.ProviderError."""
+    return providers.resolve(model, environ)
 
 
-def auth_module(model):
-    """None for API-key providers; subscription-login models are refused."""
-    if model.startswith(SUBSCRIPTION_PREFIXES):
-        raise SubscriptionModelError(
-            f"{model} needs a subscription-login adapter, which is not part of this repository. "
-            "Use an API-key model such as opencode-go/gpt-6-luna and set OPENCODE_GO_API_KEY.")
+def run_one(job, args, brief, token, model_route=None):
+    model_route = model_route or route(job["model"])
+    if model_route.model != job["model"]:
+        raise ValueError(f"route is for {model_route.model}, job is for {job['model']}")
+    return _run_one(job, args, brief, token, model_route)
 
 
-def run_one(job, args, brief, token, key):
-    auth_module(job["model"])
-    return _run_one(job, args, brief, token, key)
-
-
-def _run_one(job, args, brief, token, key):
+def _run_one(job, args, brief, token, model_route):
     case, setup, model, rep = job["case"], job["setup"], job["model"], job["rep"]
     name = f"{case['id']}__{setup}__{slug(model)}__r{rep}"
     run_dir = args.out / name
@@ -213,14 +208,13 @@ def _run_one(job, args, brief, token, key):
     if meta_path.exists() and not args.redo:
         return json.loads(meta_path.read_text())
     cards = prepare(run_dir, case, setup, brief, args.evidence_root, args.agent_prompt)
-    env = dict(os.environ, OPENCODE_API_KEY=key, FARMSIM_URL=args.container_service,
-               FARMSIM_FARM=job["farm_id"], FARMSIM_TOKEN=token,
-               FIELDSHIFT_PASS_ENV="OPENCODE_API_KEY FARMSIM_URL FARMSIM_FARM FARMSIM_TOKEN",
-               FIELDSHIFT_CONTAINER_NAME=f"fieldshift-{slug(name).lower()}")
-    if setup != "full":
-        env["FIELDSHIFT_PASS_ENV"] = "OPENCODE_API_KEY"
+    providers.write_config(run_dir, model_route)
+    simulator = ({"FARMSIM_URL": args.container_service, "FARMSIM_FARM": job["farm_id"], "FARMSIM_TOKEN": token}
+                 if setup == "full" else {})
+    env = providers.launch_env(model_route, extra=simulator)
+    env["FIELDSHIFT_CONTAINER_NAME"] = f"fieldshift-{slug(name).lower()}"
     command = [str(VM / "oc.sh"), str(run_dir), "run", "--standalone", "--agent", "farm-advisor",
-               "--model", model, "--format", "json", "--auto", brief + TASK]
+               "--model", model_route.opencode_model, "--format", "json", "--auto", brief + TASK]
     started = time.time()
     status = "completed"
     with open(run_dir / "events.jsonl", "w") as out, open(run_dir / "stderr.log", "w") as err:
@@ -237,6 +231,7 @@ def _run_one(job, args, brief, token, key):
     except (sqlite3.Error, OSError, json.JSONDecodeError) as error:
         transcript = {"error": str(error)}
     meta = {"run": name, "case": case["id"], "setup": setup, "model": model, "rep": rep, "farm_id": job["farm_id"],
+            "route": model_route.describe(),
             "status": status, "exit_code": code, "seconds": round(time.time() - started, 1),
             "cards_available": len(cards), "agent_prompt": args.agent_prompt, "trace": {k: v for k, v in trace.items() if k != "read_paths"},
             "cards_opened": sorted({Path(p).stem for p in trace["read_paths"] if "evidence/" in p} - {"INDEX"}),
@@ -285,9 +280,10 @@ def main():
     if args.rescore:
         rescore(args.rescore)
         return
-    token = os.environ["FARMSIM_TOKEN"]
-    auth_module(args.model)
-    key = os.environ["OPENCODE_GO_API_KEY"]
+    token = providers.key_environment().get("FARMSIM_TOKEN")
+    if not token:
+        parser.error("Set FARMSIM_TOKEN (the simulator service token) in the environment or fieldshift.env")
+    model_route = route(args.model)
     cases = [c for c in json.loads(args.cases.read_text()) if not args.only or c["id"] in args.only]
     args.out.mkdir(parents=True, exist_ok=True)
     ids = farm_ids(cases, args.out)
@@ -297,7 +293,7 @@ def main():
             for r in range(args.reps or c.get("reps", 1))]
     print(f"{len(jobs)} runs -> {args.out}", flush=True)
     with ThreadPoolExecutor(args.parallel) as pool:
-        for meta in pool.map(lambda j: run_one(j, args, briefs[j["case"]["id"]], token, key), jobs):
+        for meta in pool.map(lambda j: run_one(j, args, briefs[j["case"]["id"]], token, model_route), jobs):
             s = meta["score"]
             print(meta["run"], meta["status"], f"{meta['seconds']}s", "sim", meta["trace"]["simulate_calls"],
                   "cards", len(meta["cards_opened"]), s.get("recommended") if s["valid"] else s.get("problem"),
