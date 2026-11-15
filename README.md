@@ -743,7 +743,7 @@ uv run python -m fieldshift.planner.validate         # multi-county NASA/NASS + 
 uv run python -m fieldshift.planner.prices           # one-off: NASS prices received -> data/processed/planner/
 ```
 
-Needs an Apple MPS or CUDA device; the simulator refuses to fall back to CPU. Story County, IA
+Uses an Apple MPS or CUDA device by default and never falls back to the CPU silently; set `FIELDSHIFT_DEVICE=cpu` to run on the CPU (Story County, full farm pipeline: about 12 s on an M5 Pro CPU against 15 s on its GPU). Story County, IA
 (`US-19-169`) opens from the cache in a few seconds. Any other county in the NASA POWER archive is
 computed on demand and cached as compressed `.npz` arrays plus JSON under
 `data/processed/planner/`. The seven-crop search retains cyclically distinct rotations, optional

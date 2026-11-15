@@ -12,10 +12,12 @@ from torch import nn
 def mps_device():
     if __import__("os").environ.get("PYTORCH_ENABLE_MPS_FALLBACK") == "1":
         raise RuntimeError("Disable PYTORCH_ENABLE_MPS_FALLBACK for auditable accelerator execution")
+    if __import__("os").environ.get("FIELDSHIFT_DEVICE", "").lower() == "cpu":
+        return torch.device("cpu")
     if torch.cuda.is_available():
         return torch.device("cuda")
     if not torch.backends.mps.is_available():
-        raise RuntimeError("MPS or CUDA is required; neural CPU fallback is forbidden")
+        raise RuntimeError("MPS or CUDA is required; set FIELDSHIFT_DEVICE=cpu to run on the CPU")
     return torch.device("mps")
 
 
