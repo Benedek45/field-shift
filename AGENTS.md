@@ -617,3 +617,6 @@
 - The friend's 14 failures all came from the former strict GPU selectors, not Windows-specific math errors.
   Regression coverage now tests shared device precedence and real training with both GPU probes false and
   no device override. A full CPU-only simulated-availability run passed 355 tests with 69 data/fixture skips.
+- Native platform CI `43766139563` (commit `fe1d966`) passed without `FIELDSHIFT_DEVICE`:
+  Linux 355 passed/69 skipped in 23.65 s, Windows 355/69 in 46.61 s, macOS 355/69 in 39.01 s.
+  The amd64 agent image build and pinned CLI check also passed. No paid model or unpublished data was used.

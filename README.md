@@ -955,8 +955,8 @@ on macOS. A real arm64 Linux CPU smoke, using an earlier source snapshot whose
 physical engine was unchanged, ranked 434 Story County cycles, replayed 32 state
 members and produced five one-year scenarios in about 30 seconds with finite
 outputs. This is an execution check, not evidence of agronomic prediction skill.
-The latest-source [platform CI run](https://github.com/Benedek45/field-shift/actions/runs/43764938454)
-passed on Linux, macOS and Windows: **349 tests passed, 69 unpublished-data tests
+The latest-source [platform CI run](https://github.com/Benedek45/field-shift/actions/runs/43766139563)
+passed on Linux, macOS and Windows without a device override: **355 tests passed, 69 unpublished-data tests
 skipped on each OS**. The Linux amd64 Docker build and non-root CLI check also
 passed. This verifies the offline runtime, not a key-funded agent episode or native
 Windows Docker execution.
