@@ -952,3 +952,6 @@ members and produced five one-year scenarios in about 30 seconds with finite
 outputs. This is an execution check, not evidence of agronomic prediction skill.
 The latest-source Linux/Windows offline checks run in `.github/workflows/platforms.yml`;
 do not treat the older snapshot's test results as a clean run of the latest source.
+On Windows, session folders inherit the parent folder's ACLs; keep the checkout and
+session storage in a private user directory. POSIX `0700` mode bits are not a Windows
+access-control guarantee.

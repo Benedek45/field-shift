@@ -80,7 +80,10 @@ def train_ensemble(x_train, y_train, epochs=50, batch_size=8192):
             loss = ((prediction - y[index].unsqueeze(0)) ** 2).mean(dim=1).sum()
             loss.backward()
             optimizer.step()
-    torch.mps.synchronize()
+    if device.type == "mps":
+        torch.mps.synchronize()
+    elif device.type == "cuda":
+        torch.cuda.synchronize(device)
     return net.eval()
 
 

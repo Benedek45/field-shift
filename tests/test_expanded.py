@@ -157,6 +157,7 @@ def test_power_metadata_units_shape_and_complete_file(tmp_path, monkeypatch):
         weather_spec("power")
     metadata["variables"][4]["units"] = "MJ/m2/day"
     sidecar.write_text(json.dumps(metadata))
+    del frame, data  # Release mapped views before the deliberately truncated fixture.
     binary.write_bytes(b"")
     with pytest.raises(ValueError, match="complete"):
         weather_spec("power")

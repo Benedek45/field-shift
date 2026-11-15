@@ -52,3 +52,16 @@ def test_ensemble_scaler_training_and_serialization_on_selected_device(tmp_path)
     reloaded, columns = load_ensemble(str(path))
     assert columns == ["a", "b", "c", "d"]
     np.testing.assert_allclose(prediction, predict_members(reloaded, x), atol=1e-6)
+
+
+def test_cpu_training_never_synchronizes_an_accelerator(monkeypatch):
+    monkeypatch.setenv("FIELDSHIFT_DEVICE", "cpu")
+
+    def forbidden(*args, **kwargs):
+        pytest.fail("CPU training must not call CUDA or MPS synchronization")
+
+    monkeypatch.setattr(torch.mps, "synchronize", forbidden)
+    monkeypatch.setattr(torch.cuda, "synchronize", forbidden)
+    x = np.ones((8, 2), dtype="float32")
+    net = train_ensemble(x, np.ones(8, dtype="float32"), epochs=1, batch_size=4)
+    assert all(p.device.type == "cpu" for p in net.parameters())

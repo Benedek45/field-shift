@@ -5,6 +5,7 @@ The county weather, satellite and NASS files under data/processed/ are not part 
 as skipped instead of failed; with the data present every test runs normally.
 """
 
+import re
 from pathlib import Path
 
 import pytest
@@ -22,7 +23,7 @@ REASON = "needs data/processed/ (not in the repository; build it with the fields
 def _missing_data_error(excinfo):
     exc = excinfo.value
     while exc is not None:
-        message = str(exc).replace("\\", "/")
+        message = re.sub(r"[\\/]+", "/", str(exc))
         if isinstance(exc, FileNotFoundError) and "data/processed" in message:
             return True
         if "No such file or directory" in message and "data/processed" in message:
@@ -37,7 +38,7 @@ def pytest_runtest_makereport(item, call):
     report = outcome.get_result()
     if DATA_MARKER.exists() or not report.failed or call.excinfo is None:
         return
-    if item.nodeid in INDIRECT or _missing_data_error(call.excinfo):
+    if item.nodeid.replace("\\", "/") in INDIRECT or _missing_data_error(call.excinfo):
         report.outcome = "skipped"
         report.longrepr = (str(item.path), item.location[1] or 0, REASON)
 

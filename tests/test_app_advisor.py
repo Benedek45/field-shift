@@ -2,6 +2,7 @@
 (real private simulator service, no container, no provider) and the Streamlit page (AppTest)."""
 
 import json
+import os
 import subprocess
 import sys
 import urllib.error
@@ -118,7 +119,9 @@ def test_build_form_and_error_sections(story):
 
 def test_job_state_and_busy(tmp_path):
     session = core.new_session("Story County, IA", "fake/model", root=tmp_path)
-    assert session.name.endswith("-story-ia") and (session.stat().st_mode & 0o777) == 0o700
+    assert session.name.endswith("-story-ia") and session.is_dir()
+    if os.name != "nt":  # Windows permissions are inherited ACLs, not POSIX mode bits.
+        assert (session.stat().st_mode & 0o777) == 0o700
     launched = []
     core.start_job(session, "solve", launcher=lambda s, k, **kw: launched.append(k))
     assert launched == ["solve"] and core.job_state(session)["running"]  # starting, inside the grace period

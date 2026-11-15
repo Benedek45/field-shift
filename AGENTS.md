@@ -590,3 +590,10 @@
   (three obsolete shell-launch mocks, one git-ignore test without `.git`). Current-source snapshot packaging
   was blocked by Safety Net `secret.basename.env`, even with explicit exclusions; no bypass/retry.
   Do not claim latest-source Linux success from that image; use the normal checked-in platform CI results.
+- First platform CI (`43764540221`) built/passed the amd64 image but found a second unconditional MPS
+  synchronization in `model.neural.train_ensemble` (CPU Linux/Windows error, hosted Mac SIGSEGV).
+  It now synchronizes only the selected MPS/CUDA device; an explicit-CPU regression forbids both calls.
+  Windows also exposed double-escaped missing-data paths in the test-only skip hook, two tests replacing
+  mapped files without releasing their readers, and a POSIX-only mode assertion. Normalize path separators,
+  release fixture maps before rewriting, and retain the mode assertion only on POSIX; Windows directories
+  inherit ACLs and must live in private user storage. These fixes do not relax decision/scoring checks.

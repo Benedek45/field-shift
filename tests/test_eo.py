@@ -160,8 +160,11 @@ def test_write_cube_and_load_eo_round_trip(tmp_path):
     assert np.allclose(cube[1, 10, 0], values["ndvi"][1, 10])
     assert not list(tmp_path.glob("*.part"))
     # Rewriting keeps the file readable and preserves the JSON contract.
+    del cube  # Windows cannot replace a file while a reader still maps it.
     eo.write_cube(path, values, counties, variables)
     assert json.loads(path.with_suffix(".json").read_text())["shape"][0] == 2
+    rewritten, _ = eo.load_eo(path)
+    np.testing.assert_allclose(rewritten[:, :, 0], values["ndvi"])
 
 
 def test_dn_mask_drops_quality_flags_before_any_averaging():

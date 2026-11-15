@@ -142,3 +142,19 @@ def test_imports_and_cpu_execution_in_clean_process():
         env=env, capture_output=True, text=True, check=False,
     )
     assert p.returncode == 0, p.stderr
+
+
+@pytest.mark.parametrize("name", [
+    "data/processed/weather/power_county_daily.json",
+    r"data\processed\weather\power_county_daily.json",
+    r"C:\checkout\data\processed\weather\power_county_daily.json",
+])
+def test_missing_private_data_paths_are_recognized_on_each_os(name):
+    from conftest import _missing_data_error
+    exc = FileNotFoundError(errno.ENOENT, "No such file or directory", name)
+    assert _missing_data_error(SimpleNamespace(value=exc))
+    wrapped = RuntimeError(str(exc))
+    wrapped.__cause__ = exc
+    assert _missing_data_error(SimpleNamespace(value=wrapped))
+    assert not _missing_data_error(SimpleNamespace(
+        value=FileNotFoundError(errno.ENOENT, "No such file or directory", "src/missing.py")))
