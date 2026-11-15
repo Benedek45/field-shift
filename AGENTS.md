@@ -597,3 +597,8 @@
   mapped files without releasing their readers, and a POSIX-only mode assertion. Normalize path separators,
   release fixture maps before rewriting, and retain the mode assertion only on POSIX; Windows directories
   inherit ACLs and must live in private user storage. These fixes do not relax decision/scoring checks.
+- Final latest-source platform CI `43764938454`, commit `f7752de`, all four jobs passed:
+  Linux 349 passed/69 skipped in 31.60 s; macOS 349/69 in 28.24 s; Windows 349/69 in 45.84 s;
+  amd64 Docker build + non-root pinned CLI check passed. The 69 skips require unpublished data/private fixtures.
+  Native Windows Docker and a paid-provider episode are still not validated. Deprecation notices for the
+  Actions Node runtime and runner-image migration are warnings, not test failures.
