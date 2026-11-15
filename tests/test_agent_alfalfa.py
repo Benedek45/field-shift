@@ -1,4 +1,6 @@
 """Stand accounting contracts; synthetic weather is not field validation."""
+import os
+
 import numpy as np
 import pandas as pd
 import pytest
@@ -12,8 +14,10 @@ from fieldshift.sim.economics import ACRES_HA, ECON_FIELDS, context, reprice
 from fieldshift.sim.engine import ledger_pass, prepare, trajectories, water_pass
 from fieldshift.sim.traits import CATALOG
 
-gpu = pytest.mark.skipif(not (torch.backends.mps.is_available() or torch.cuda.is_available()),
-                         reason="No CPU simulator fallback")
+gpu = pytest.mark.skipif(
+    not (os.environ.get("FIELDSHIFT_DEVICE", "").strip().lower() == "cpu"
+         or torch.backends.mps.is_available() or torch.cuda.is_available()),
+    reason="Select FIELDSHIFT_DEVICE=cpu or provide MPS/CUDA")
 
 
 def test_census_practice_short_tons_and_recent_suppressed_fallback(monkeypatch):

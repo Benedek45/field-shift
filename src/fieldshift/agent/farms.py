@@ -1,7 +1,6 @@
 """Opaque farm registry. Run ``python -m fieldshift.agent.farms add --help``."""
 
 import argparse
-import fcntl
 import json
 import math
 import os
@@ -9,6 +8,8 @@ import re
 import secrets
 import string
 from pathlib import Path
+
+from fieldshift.locking import file_lock
 
 ROOT = Path("data/processed/agent")
 OVERRIDES = {
@@ -195,8 +196,7 @@ def add(record, root=None):
     record = validate(record)
     root = Path(root or ROOT)
     root.mkdir(parents=True, exist_ok=True)
-    with (root / ".registry.lock").open("a") as lock:
-        fcntl.flock(lock, fcntl.LOCK_EX)
+    with file_lock(root / ".registry.lock"):
         path = root / "farms.json"
         records = json.loads(path.read_text()) if path.exists() else {}
         # 150 bits of entropy; letters only so an opaque ID cannot accidentally

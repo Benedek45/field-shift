@@ -1,4 +1,5 @@
 import json
+import os
 
 import numpy as np
 import pandas as pd
@@ -20,6 +21,7 @@ from fieldshift.model.expanded_data import (
     weather_spec,
     yearly_frame,
 )
+from fieldshift.model.neural import accelerator_device
 from fieldshift.model.probabilistic import (
     ResidentRows,
     ResidentWeather,
@@ -160,7 +162,11 @@ def test_power_metadata_units_shape_and_complete_file(tmp_path, monkeypatch):
         weather_spec("power")
 
 
-@pytest.mark.skipif(not torch.backends.mps.is_available(), reason="Accelerator only")
+@pytest.mark.skipif(
+    not (os.environ.get("FIELDSHIFT_DEVICE") == "cpu" or
+         torch.backends.mps.is_available() or torch.cuda.is_available()),
+    reason="Requires an accelerator or explicit CPU mode",
+)
 def test_heteroscedastic_training_and_calibration_device_residency(tmp_path):
     rng = np.random.default_rng(2026)
     data = pd.DataFrame({
@@ -172,9 +178,10 @@ def test_heteroscedastic_training_and_calibration_device_residency(tmp_path):
     train = rows.indices(np.arange(200) < 50)
     calibration = rows.indices(np.arange(200) >= 50)
     net, _ = train_response(rows, train, [1], epochs=2)
-    assert all(p.device.type == "mps" for p in net.parameters())
+    device = torch.empty(0, device=accelerator_device()).device
+    assert all(p.device == device for p in net.parameters())
     before = distribution(net, rows, calibration)
-    assert before.device.type == "mps"
+    assert before.device == device
     record = recalibrate(net, rows, calibration)
     assert record["calibration_rows"] == 150
     assert .25 <= record["scale"] <= 4
@@ -188,8 +195,12 @@ def test_heteroscedastic_training_and_calibration_device_residency(tmp_path):
     torch.testing.assert_close(distribution(loaded, rows, calibration), expected)
 
 
-@pytest.mark.skipif(not torch.backends.mps.is_available(), reason="Accelerator only")
-def test_sequence_gathers_and_pools_on_mps(tmp_path):
+@pytest.mark.skipif(
+    not (os.environ.get("FIELDSHIFT_DEVICE") == "cpu" or
+         torch.backends.mps.is_available() or torch.cuda.is_available()),
+    reason="Requires an accelerator or explicit CPU mode",
+)
+def test_sequence_gathers_and_pools_on_selected_device(tmp_path):
     variables = ["tmin", "tmax", "tavg", "prec", "rad", "vpd", "et0", "cwb", "rsm"]
     path = tmp_path / "weather.f32"
     array = np.memmap(path, mode="w+", dtype="float32", shape=(2, 500, 9))
@@ -206,10 +217,10 @@ def test_sequence_gathers_and_pools_on_mps(tmp_path):
     rows = ResidentRows(d, ["x", "trait__base_c"], np.zeros(16))
     index = rows.indices(np.ones(16, dtype=bool))
     windows = weather.windows(rows.county[index], rows.start[index], rows.length[index])
-    assert windows.device.type == "mps"
+    assert windows.device == torch.empty(0, device=accelerator_device()).device
     assert windows.shape == (16, 18, 366)
     assert windows[:, :, 100:].count_nonzero() == 0
     net, _ = train_response(rows, index, [1], epochs=1, sequence=True, weather=weather)
     predicted = distribution(net, rows, index, weather)
-    assert predicted.device.type == "mps"
+    assert predicted.device == windows.device
     assert torch.isfinite(predicted).all()

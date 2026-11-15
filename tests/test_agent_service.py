@@ -1,5 +1,6 @@
 import http.client
 import json
+import os
 import re
 import threading
 
@@ -11,8 +12,10 @@ from fieldshift.agent.brief import build, climate
 from fieldshift.agent.runtime import InputError, Runtime
 from fieldshift.agent.service import make_server
 
-pytestmark = pytest.mark.skipif(not (torch.backends.mps.is_available() or torch.cuda.is_available()),
-                                reason="Agent simulator deliberately refuses CPU fallback")
+pytestmark = pytest.mark.skipif(
+    not (os.environ.get("FIELDSHIFT_DEVICE", "").strip().lower() == "cpu"
+         or torch.backends.mps.is_available() or torch.cuda.is_available()),
+    reason="Select FIELDSHIFT_DEVICE=cpu or provide MPS/CUDA")
 
 STORY = [{"crop": "soybean"}, {"crop": "corn"}, {"crop": "soybean"}, {"crop": "corn"}]
 RYE = [s | {"winter": "cereal_rye"} for s in STORY]

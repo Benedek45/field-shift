@@ -1,4 +1,5 @@
 import json
+import os
 import threading
 import urllib.error
 import urllib.request
@@ -22,8 +23,9 @@ from fieldshift.sim.economics import (
 from fieldshift.sim.traits import CATALOG
 
 live_data = pytest.mark.skipif(not Path("data/processed/nass_county_crops.csv.gz").exists()
-                               or not (torch.backends.mps.is_available() or torch.cuda.is_available()),
-                               reason="Requires local archives and accelerator")
+                               or not (os.environ.get("FIELDSHIFT_DEVICE", "").strip().lower() == "cpu"
+                                       or torch.backends.mps.is_available() or torch.cuda.is_available()),
+                               reason="Requires local archives and an explicitly selected CPU or MPS/CUDA")
 
 
 @pytest.mark.parametrize("value", [

@@ -1,4 +1,5 @@
 import math
+import os
 
 import pytest
 import torch
@@ -151,8 +152,10 @@ def _synthetic_site(years=(1999, 2000, 2001, 2002, 2003, 2004)):
     return {"daily": daily, "soil": soil, "planting": {}}
 
 
-needs_accelerator = pytest.mark.skipif(not (torch.backends.mps.is_available() or torch.cuda.is_available()),
-                                       reason="The simulator deliberately refuses CPU fallback")
+needs_accelerator = pytest.mark.skipif(
+    not (os.environ.get("FIELDSHIFT_DEVICE", "").strip().lower() == "cpu"
+         or torch.backends.mps.is_available() or torch.cuda.is_available()),
+    reason="Select FIELDSHIFT_DEVICE=cpu or provide MPS/CUDA")
 
 
 @needs_accelerator

@@ -1,0 +1,39 @@
+name: Platform tests
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  tests:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    env:
+      FIELDSHIFT_DEVICE: cpu
+      PYTHONUTF8: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          python-version: "3.12"
+      - name: Install runtime and test dependencies
+        run: uv sync --locked
+      - name: Lint
+        run: uv run ruff check .
+      - name: Offline suite (no API keys or unpublished data)
+        run: uv run pytest -q -rs
+  linux-image:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build the Linux amd64 agent
+        run: docker build -t fieldshift-agent:oc2.3.0 vm
+      - name: Check the pinned CLI without a model or credentials
+        run: docker run --rm --entrypoint opencode fieldshift-agent:oc2.3.0 --version

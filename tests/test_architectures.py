@@ -1,3 +1,5 @@
+import os
+
 import numpy as np
 import pandas as pd
 import pytest
@@ -5,6 +7,7 @@ import torch
 
 from fieldshift.features.stress import daily_stages
 from fieldshift.features.traits import CROPS, numeric_traits
+from fieldshift.model.neural import accelerator_device
 from fieldshift.model.probabilistic import (
     ARCHITECTURES,
     DEVELOPMENT_BINS,
@@ -19,7 +22,9 @@ from fieldshift.model.probabilistic import (
 )
 
 pytestmark = pytest.mark.skipif(
-    not (torch.backends.mps.is_available() or torch.cuda.is_available()), reason="Accelerator only"
+    not (os.environ.get("FIELDSHIFT_DEVICE") == "cpu" or
+         torch.backends.mps.is_available() or torch.cuda.is_available()),
+    reason="Requires an accelerator or explicit CPU mode",
 )
 VARIABLES = ["tmin", "tmax", "tavg", "prec", "rad", "vpd", "et0", "cwb", "rsm"]
 
@@ -106,10 +111,11 @@ def test_reference_ensemble_trains_on_accelerator(tmp_path, name):
     trait_indices = list(range(2, len(columns)))
     net, timing = train_response(rows, index, trait_indices, epochs=1, weather=weather,
                                  architecture=name, batch_size=32)
-    assert timing["device"] != "cpu" and len(timing["epoch_train_loss"]) == 1
-    assert all(p.device.type in {"mps", "cuda"} for p in net.parameters())
+    device = torch.empty(0, device=accelerator_device()).device
+    assert timing["device"] == device.type and len(timing["epoch_train_loss"]) == 1
+    assert all(p.device == device for p in net.parameters())
     predicted = distribution(net, rows, index, weather)
-    assert predicted.device.type in {"mps", "cuda"} and torch.isfinite(predicted).all()
+    assert predicted.device == device and torch.isfinite(predicted).all()
     assert np.isfinite(loss_summary(net, rows, index, weather)["nll"])
     if name == "thermal_cnn":
         path = tmp_path / f"{name}.pt"

@@ -2,6 +2,7 @@
 
 import json
 import math
+import os
 from pathlib import Path
 
 import pytest
@@ -11,8 +12,10 @@ from fieldshift.sim.components import accelerator
 from fieldshift.sim.forecast import validate
 from fieldshift.sim.state import PROTECTED_ASSETS, ROOT, kalman_update
 
-gpu = pytest.mark.skipif(not (torch.backends.mps.is_available() or torch.cuda.is_available()),
-                         reason="Simulator requires MPS/CUDA, not a CPU fallback")
+gpu = pytest.mark.skipif(
+    not (os.environ.get("FIELDSHIFT_DEVICE", "").strip().lower() == "cpu"
+         or torch.backends.mps.is_available() or torch.cuda.is_available()),
+    reason="Select FIELDSHIFT_DEVICE=cpu or provide MPS/CUDA")
 
 
 @gpu

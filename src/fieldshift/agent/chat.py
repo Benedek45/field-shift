@@ -2,7 +2,7 @@
 
     uv run python -m fieldshift.agent.chat [--model M] [--county "Story, IA"] [--resume DIR] [--script FILE]
 
-The farmer may start with only a county. The advisor (an OpenCode agent in the Colima container)
+The farmer may start with only a county. The advisor (an OpenCode agent in a Docker container)
 asks for the rest, proposes form values with `./farmsim form`, and this host program shows them as
 a table and applies them only when the farmer's next message is a plain "yes". After every new or
 changed recommendation the host re-runs the product checks and appends a one-line result.
@@ -34,6 +34,7 @@ from fieldshift.agent import (
     brief,
     chat_forms,
     checks,
+    containers,
     evidence,
     farms,
     pilot,
@@ -290,18 +291,18 @@ class OpenCodeAgent:
         try:
             values = fragments(model_route.secrets())
             providers.write_config(run_dir, model_route)
-            command = [str(pilot.VM / "oc.sh"), str(run_dir), "run", "--standalone", "--agent", "farm-advisor",
+            command = containers.run_command(run_dir, ["run", "--standalone", "--agent", "farm-advisor",
                        "--model", model_route.opencode_model, "--format", "json", "--auto",
-                       *(["--session", session_id] if session_id else []), message]
+                       *(["--session", session_id] if session_id else []), message], environ=env)
             with open(run_dir / "events.jsonl", "w") as out, open(run_dir / "stderr.log", "w") as err:
                 try:
                     code = subprocess.run(command, env=env, stdout=out, stderr=err, stdin=subprocess.DEVNULL,
-                                          timeout=self.timeout, check=False).returncode
+                                          timeout=self.timeout, shell=False, check=False).returncode
                     result.update(status="completed" if code == 0 else "failed", exit_code=code)
                 except subprocess.TimeoutExpired:
                     result["status"] = "timeout"
-                    subprocess.run(["docker", "--context", os.environ.get("FIELDSHIFT_DOCKER_CONTEXT", "colima-rosetta"),
-                                    "stop", name], capture_output=True, check=False)
+                    subprocess.run(containers.docker_command("stop", name, environ=env),
+                                   env=env, shell=False, capture_output=True, timeout=30, check=False)
             finished = True
             result["agent_seconds"] = round(time.perf_counter() - started, 1)
             events = read_events(run_dir / "events.jsonl")
@@ -318,12 +319,14 @@ class OpenCodeAgent:
                 transcripts.OUTPUT_CHARS = limit
             return result
         finally:
-            if not finished:
-                subprocess.run(["docker", "--context", os.environ.get("FIELDSHIFT_DOCKER_CONTEXT", "colima-rosetta"),
-                                "stop", name], capture_output=True, check=False)
-            result["credential_scrub"] = scrub_credentials(run_dir, values, keep_session=keep_session)
-            values = None
-            marker.unlink(missing_ok=True)
+            try:
+                if not finished:
+                    subprocess.run(containers.docker_command("stop", name, environ=env),
+                                   env=env, shell=False, capture_output=True, timeout=30, check=False)
+            finally:
+                result["credential_scrub"] = scrub_credentials(run_dir, values, keep_session=keep_session)
+                values = None
+                marker.unlink(missing_ok=True)
 
 
 def continue_turn(agent, model, run_dir, state, compose, record, **where):

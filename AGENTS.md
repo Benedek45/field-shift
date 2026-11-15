@@ -337,6 +337,7 @@
 
 ## Farming agent (OpenCode v2 in the Colima VM), state 2026-11-14 ~14:00
 
+- Historical launch settings below are superseded by "Linux/server portability" at the end.
 - Image `fieldshift-agent:oc2.3.0-arm64` (`vm/Dockerfile`), launcher `vm/oc.sh`, agent prompt
   `vm/agents/farm-advisor.md`, simulator client `vm/farmsim` (must be executable; prints `sim:<n>` per call).
   Docker context `colima-rosetta` only; the `default` and `cr-android` profiles and the containers
@@ -557,4 +558,35 @@
   machine, so no full episode has been run with them.
 - Custom model IDs are slugged for OpenCode's model key (`custom/qwen3.5:9b` -> `custom/qwen3.5-9b`,
   `modelID` keeps the original). Azure/Bedrock/Cloudflare get every listed variable that is set (untested);
-  Copilot, Vertex and vLLM discovery are refused with an explanation.
+   Copilot, Vertex and vLLM discovery are refused with an explanation.
+
+## Linux/server portability (2026-11-15)
+
+- Public checkout only: `field-shift`; do not transfer private history or credentials from `nasa-farming`.
+  Inference on a CPU server requires `FIELDSHIFT_DEVICE=cpu`, never a silent accelerator fallback.
+  `model.probabilistic.synchronize` synchronizes CUDA/MPS only, not CPU.
+- `agent.containers` builds Docker argv without a host shell. Image default
+  `fieldshift-agent:oc2.3.0`; override `FIELDSHIFT_IMAGE`. Docker uses its current endpoint by default;
+  `FIELDSHIFT_DOCKER_CONTEXT` selects an explicit per-command context. On this development Mac use
+  `colima-rosetta` explicitly, leave other profiles and unrelated containers alone.
+- `vm/Dockerfile` pins the official OpenCode 2.3.0 npm archives by SHA-512 for arm64 and amd64-baseline.
+  Exact version output is `opencode v2.3.0`. Both images built and ran the CLI as the non-root image user;
+  `/cfg` must be owned by that user too. Build includes a post-USER version check.
+  Local image configs: arm64 `7dd694ff16e79fb87ce4bcad5b1008c4ad6a31ecee0b4fc182a2ecd7aca747cd`,
+  amd64 `56083317056b2df09eefcfd04c633bb87f07b6a4e4dabfa3179763be004473ce`.
+  Mounted launcher version/auth-list and host-gateway HTTP passed without keys/model calls.
+- `locking.py` uses kernel file locks (fcntl on Unix, msvcrt first-byte locks on Windows).
+  Registry, app job and benchmark-run locks use it. App workers use a Python supervisor
+  `app.worker_process` rather than `/bin/sh`; Windows detach flags and Unix sessions are selected explicitly.
+- Current source local CPU suite: 345 passed, 69 unpublished-data skips; focused synthetic engine tests
+  42 passed, 4 private acceptance-fixture skips. Ruff clean. Simulator test skips honor explicit CPU selection.
+  Native Windows Docker execution remains unverified; OS-matrix CI is `.github/workflows/platforms.yml`.
+- Real Linux arm64 CPU physical smoke used the earlier source snapshot (engine files matched current source):
+  torch 2.15.0+cpu, 4 threads, farm load 8.46 s, 434-cycle scoreboard 15.55 s, 32-member replay 1.96 s,
+  five-rotation one-year climatology forecast 3.78 s, all outputs finite. Receipt on this machine:
+  `~/.opencode-vm/fieldshift/smokes/linux-engine-cpu/receipt.json`. Data mounted read-only; caches separate.
+  These are execution tests, not evidence of forecast skill.
+- The earlier Linux snapshot's full suite was NOT clean: 290 passed, 99 skipped, 4 failed
+  (three obsolete shell-launch mocks, one git-ignore test without `.git`). Current-source snapshot packaging
+  was blocked by Safety Net `secret.basename.env`, even with explicit exclusions; no bypass/retry.
+  Do not claim latest-source Linux success from that image; use the normal checked-in platform CI results.

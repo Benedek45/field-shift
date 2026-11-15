@@ -8,7 +8,6 @@ host.docker.internal.
 
 import argparse
 import json
-import os
 import re
 import shutil
 import sqlite3
@@ -18,7 +17,7 @@ import urllib.request
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
-from fieldshift.agent import evidence, farms, providers, transcripts
+from fieldshift.agent import containers, evidence, farms, providers, transcripts
 
 REPO = Path(__file__).resolve().parents[3]
 VM = REPO / "vm"
@@ -79,6 +78,7 @@ def canonical(rotation):
 def prepare(run_dir, case, setup, brief, evidence_root, agent_prompt="farm-advisor.md"):
     if run_dir.exists():
         shutil.rmtree(run_dir)
+    run_dir.mkdir(parents=True, mode=0o700)
     work = run_dir / "work"
     (run_dir / "cfg" / "opencode" / "agents").mkdir(parents=True)
     (run_dir / "data").mkdir()
@@ -96,7 +96,8 @@ def prepare(run_dir, case, setup, brief, evidence_root, agent_prompt="farm-advis
         (work / "farmsim").chmod(0o755)
         shutil.copy(VM / "SIMULATOR_NOTES.md", work / "SIMULATOR_NOTES.md")
     (run_dir / "FARM.md").write_text(brief)
-    subprocess.run(["chmod", "-R", "a+rwX", str(run_dir)], check=True)
+    # The launcher uses the host UID on POSIX; no world-writable tree or Unix
+    # chmod executable is needed. Docker Desktop handles Windows bind access.
     return cards
 
 
@@ -213,18 +214,19 @@ def _run_one(job, args, brief, token, model_route):
                  if setup == "full" else {})
     env = providers.launch_env(model_route, extra=simulator)
     env["FIELDSHIFT_CONTAINER_NAME"] = f"fieldshift-{slug(name).lower()}"
-    command = [str(VM / "oc.sh"), str(run_dir), "run", "--standalone", "--agent", "farm-advisor",
-               "--model", model_route.opencode_model, "--format", "json", "--auto", brief + TASK]
+    command = containers.run_command(run_dir, [
+        "run", "--standalone", "--agent", "farm-advisor",
+        "--model", model_route.opencode_model, "--format", "json", "--auto", brief + TASK], environ=env)
     started = time.time()
     status = "completed"
     with open(run_dir / "events.jsonl", "w") as out, open(run_dir / "stderr.log", "w") as err:
         try:
             code = subprocess.run(command, env=env, stdout=out, stderr=err, stdin=subprocess.DEVNULL,
-                                  timeout=args.timeout, check=False).returncode
+                                  timeout=args.timeout, shell=False, check=False).returncode
         except subprocess.TimeoutExpired:
             code, status = None, "timeout"
-            subprocess.run(["docker", "--context", os.environ.get("FIELDSHIFT_DOCKER_CONTEXT", "colima-rosetta"),
-                            "stop", env["FIELDSHIFT_CONTAINER_NAME"]], capture_output=True, check=False)
+            subprocess.run(containers.docker_command("stop", env["FIELDSHIFT_CONTAINER_NAME"], environ=env),
+                           env=env, shell=False, capture_output=True, timeout=30, check=False)
     trace = parse_events(run_dir / "events.jsonl")
     try:
         transcript = transcripts.export(run_dir)

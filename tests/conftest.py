@@ -22,9 +22,10 @@ REASON = "needs data/processed/ (not in the repository; build it with the fields
 def _missing_data_error(excinfo):
     exc = excinfo.value
     while exc is not None:
-        if isinstance(exc, FileNotFoundError) and "data/processed" in str(exc):
+        message = str(exc).replace("\\", "/")
+        if isinstance(exc, FileNotFoundError) and "data/processed" in message:
             return True
-        if "No such file or directory" in str(exc) and "data/processed" in str(exc):
+        if "No such file or directory" in message and "data/processed" in message:
             return True
         exc = exc.__cause__ or exc.__context__
     return False

@@ -32,10 +32,11 @@ ARCHITECTURES = {
 
 
 def synchronize():
-    if accelerator_device().type == "mps":
+    device = accelerator_device()
+    if device.type == "mps":
         torch.mps.synchronize()
-    else:
-        torch.cuda.synchronize()
+    elif device.type == "cuda":
+        torch.cuda.synchronize(device)
 
 
 class BatchedLinear(nn.Module):

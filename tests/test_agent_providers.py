@@ -1,14 +1,13 @@
 """Offline tests for model routing and key handling (no provider, no container)."""
 
 import json
-import os
 import subprocess
 from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
 
-from fieldshift.agent import chat, pilot, providers
+from fieldshift.agent import chat, containers, pilot, providers
 from fieldshift.app import advisor_core as core
 
 FAKE = "FAKE-PROVIDER-KEY-" + "Qx9" * 20  # synthetic, never a real credential
@@ -140,7 +139,8 @@ def _fake_launcher(monkeypatch, module, calls):
     real = subprocess.run
 
     def run(command, *args, **kwargs):
-        if str(command[0]).endswith("oc.sh"):
+        if command[0] == "docker" and "run" in command:
+            assert kwargs["shell"] is False
             calls.append({"argv": list(command), "env": dict(kwargs["env"])})
             kwargs["stdout"].write(json.dumps({"type": "text", "sessionID": "ses_fake",
                                                "part": {"text": "ok"}}) + "\n")
@@ -195,19 +195,26 @@ def test_chat_turn_writes_config_and_passes_the_key_by_name_only(tmp_path, monke
     assert _files_containing(tmp_path, FAKE) == []
 
 
-def test_launcher_puts_names_not_values_on_the_docker_command_line(tmp_path):
-    bin_dir = tmp_path / "bin"
-    bin_dir.mkdir()
-    (bin_dir / "docker").write_text('#!/bin/sh\nprintf "%s\\n" "$@" > "$DOCKER_ARGV"\n')
-    (bin_dir / "docker").chmod(0o755)
-    env = {**os.environ, "PATH": f"{bin_dir}:{os.environ['PATH']}", "DOCKER_ARGV": str(tmp_path / "argv"),
-           "OPENROUTER_API_KEY": FAKE, "FIELDSHIFT_PASS_ENV": "OPENROUTER_API_KEY"}
-    subprocess.run([str(REPO / "vm/oc.sh"), str(tmp_path), "run", "hi"], env=env, check=True)
-    argv = (tmp_path / "argv").read_text().splitlines()
+def test_launcher_puts_names_not_values_on_the_docker_command_line(tmp_path, monkeypatch):
+    for directory in ("cfg", "data", "work"):
+        (tmp_path / directory).mkdir()
+    monkeypatch.setenv("OPENROUTER_API_KEY", FAKE)
+    monkeypatch.setenv("FIELDSHIFT_PASS_ENV", "OPENROUTER_API_KEY")
+    calls = []
+
+    def run(command, **kwargs):
+        calls.append(command)
+        assert kwargs["shell"] is False
+        return subprocess.CompletedProcess(command, 0)
+
+    monkeypatch.setattr(containers.subprocess, "run", run)
+    assert containers.main([str(tmp_path), "run", "hi"]) == 0
+    (argv,) = calls
     assert FAKE not in argv and argv[argv.index("-e") + 1] == "OPENROUTER_API_KEY"
-    bad = subprocess.run([str(REPO / "vm/oc.sh"), str(tmp_path), "run"], env={**env, "FIELDSHIFT_PASS_ENV": "A=b"},
-                         capture_output=True, text=True, check=False)
-    assert bad.returncode == 2 and "names only" in bad.stderr
+    monkeypatch.setenv("FIELDSHIFT_PASS_ENV", "A=b")
+    with pytest.raises(SystemExit) as caught:
+        containers.main([str(tmp_path), "run"])
+    assert caught.value.code == 2 and len(calls) == 1
 
 
 # -- the app's model picker ----------------------------------------------------------------------

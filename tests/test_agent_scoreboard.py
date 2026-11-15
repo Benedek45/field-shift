@@ -1,5 +1,6 @@
 import http.client
 import json
+import os
 import threading
 
 import numpy as np
@@ -12,8 +13,9 @@ from fieldshift.agent.runtime import InputError, Runtime
 from fieldshift.agent.service import make_server
 from fieldshift.planner import search
 
-ACCELERATOR = torch.backends.mps.is_available() or torch.cuda.is_available()
-requires_accelerator = pytest.mark.skipif(not ACCELERATOR, reason="No CPU fallback for simulator or bootstrap")
+ACCELERATOR = (os.environ.get("FIELDSHIFT_DEVICE", "").strip().lower() == "cpu"
+               or torch.backends.mps.is_available() or torch.cuda.is_available())
+requires_accelerator = pytest.mark.skipif(not ACCELERATOR, reason="Select FIELDSHIFT_DEVICE=cpu or provide MPS/CUDA")
 
 
 @pytest.fixture(scope="module")

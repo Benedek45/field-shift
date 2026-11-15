@@ -4,10 +4,8 @@ uv run python -m fieldshift.bench.run --smoke
 """
 
 import argparse
-import fcntl
 import hashlib
 import json
-import os
 import re
 import shutil
 import subprocess
@@ -16,7 +14,8 @@ import time
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
-from fieldshift.agent import farms, pilot, transcripts
+from fieldshift import locking
+from fieldshift.agent import containers, farms, pilot, transcripts
 from fieldshift.agent.scoreboard import _fingerprint
 from fieldshift.bench.common import DATA, ROOT, RUNS, local_service
 
@@ -91,9 +90,9 @@ def main():
     if args.reps < 1 or args.parallel < 1:
         parser.error("reps and parallel must be positive")
     args.out.mkdir(parents=True, exist_ok=True)
-    run_lock = (args.out / ".runner.lock").open("a")
+    run_lock = (args.out / ".runner.lock").open("a+b")
     try:
-        fcntl.flock(run_lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        locking.acquire(run_lock, blocking=False)
     except BlockingIOError:
         parser.error("A benchmark runner already owns this output directory")
     args.evidence_root, args.agent_prompt, args.redo = ROOT / "data/evidence", "farm-advisor-bench.md", False
@@ -108,9 +107,8 @@ def main():
                "fingerprint": fingerprint, "smoke": args.smoke,
                "harness_version": "OpenCode 2.3.0",
                "image_id": subprocess.check_output(
-                   ["docker", "--context", os.environ.get("FIELDSHIFT_DOCKER_CONTEXT", "colima-rosetta"),
-                    "image", "inspect", os.environ.get("FIELDSHIFT_IMAGE", "fieldshift-agent:oc2.3.0-arm64"),
-                    "--format", "{{.Id}}"], text=True).strip(),
+                   containers.docker_command("image", "inspect", containers.image_name(),
+                                             "--format", "{{.Id}}"), text=True).strip(),
                "source_hashes": {name: hashlib.sha256((ROOT / name).read_bytes()).hexdigest()
                                  for name in ("vm/oc.sh", "vm/agents/farm-advisor-a3.md",
                                               "vm/agents/farm-advisor-bench.md", "vm/farmsim", "bench/farmsim")}}

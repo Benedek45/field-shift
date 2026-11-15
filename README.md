@@ -882,3 +882,73 @@ growth on freezing-mean days. Biomass/WP and unobserved snow protection still ne
 Code: `src/fieldshift/sim/` (trait extension, FAO-56 bucket, N, carbon, RUSLE, pest ledgers, the
 batched rollout), `src/fieldshift/planner/` (site data, candidate search, ranking, explanations,
 validation), `src/fieldshift/app/` (Streamlit). The tool supports and does not replace farmer judgment.
+
+## Linux server and Windows setup
+
+The Python app/simulator runs on the host; only the OpenCode agent runs in a Linux
+container. Install Python 3.12+, `uv`, and Docker Engine 20.10+ with BuildKit on a
+Linux amd64 or arm64 server. The account running Field Shift needs access to Docker
+(Docker socket access is effectively root access; do not expose it to app users).
+Use a local Docker daemon: bind-mount paths and the simulator must be reachable
+from that daemon. Restore or rebuild the processed data described above; the public
+checkout does not include it.
+
+From the repository root:
+
+```bash
+uv sync --locked
+docker build -t fieldshift-agent:oc2.3.0 vm
+docker run --rm --entrypoint opencode fieldshift-agent:oc2.3.0 --version
+export FIELDSHIFT_DEVICE=cpu   # explicit CPU operation on a server without CUDA
+uv run streamlit run src/fieldshift/app/advisor.py --server.address 127.0.0.1
+```
+
+The version check requires no model, API key or paid call. `vm/Dockerfile` downloads
+the official OpenCode 2.3.0 npm binary for the build's `TARGETARCH`, verifies a pinned
+SHA-512 checksum, and checks its version. The amd64 binary is the baseline build
+for CPUs without AVX2; arm64 is native. To publish both architectures with your own
+Buildx builder, use `docker buildx build --platform linux/amd64,linux/arm64 -t
+<registry>/fieldshift-agent:oc2.3.0 --push vm`. Neither image contains provider keys.
+
+Configure the provider using "Choosing a model and API key" above, then open the
+questionnaire through an SSH tunnel or an authenticated TLS reverse proxy. Do not
+publish Streamlit directly on an untrusted network. Agent episodes start an
+authenticated simulator listener on the host; allow Docker bridge traffic to it,
+but firewall it from external clients. `host.docker.internal:host-gateway` is added
+per container, including on Linux Engine. A local-model server must likewise
+listen on a host address reachable from Docker, not only loopback.
+
+Docker launch, image inspection and timeout cleanup use the same endpoint:
+
+- Default: Docker's current context / `DOCKER_CONTEXT` / `DOCKER_HOST`; Field Shift
+  never switches the global context.
+- Override only Field Shift: `FIELDSHIFT_DOCKER_CONTEXT=<name>`.
+- Image override: `FIELDSHIFT_IMAGE=<registry>/fieldshift-agent:<tag>` (default
+  `fieldshift-agent:oc2.3.0`).
+
+The Python launcher (`uv run python -m fieldshift.agent.containers <run-dir>
+[opencode args...]`) requires existing `cfg/`, `data/`, `work/` directories. Only
+those absolute paths are mounted. Pilot/chat call Docker directly with argv lists,
+without a host shell; keys are forwarded as `-e VARIABLE_NAME`, never key literals.
+`FIELDSHIFT_PASS_ENV` accepts space-separated environment variable names only.
+POSIX launches use the host UID/GID so output remains writable without making run
+folders world-writable. `vm/oc.sh` remains a Unix compatibility wrapper.
+
+**Native Windows:** install Python/uv and Docker Desktop in **Linux containers**
+mode, with the project drive available for bind mounts. Use the same `uv` and
+`docker build` commands in PowerShell; set CPU mode with
+`$env:FIELDSHIFT_DEVICE = "cpu"` instead of `export`. No Git Bash, WSL shell, Colima,
+or host `chmod` command is required for pilot/chat launches. Run the Python module
+above rather than `vm/oc.sh`. Multi-platform CI covers the offline suite; native
+Windows Docker execution still needs an end-to-end check on a Windows host.
+
+**Verification:** both arm64 and amd64 agent images were built and ran the pinned
+CLI as their non-root user. The mounted launcher and container-to-host HTTP
+connection were also checked without provider credentials. The current source
+passed 345 offline tests (69 skipped for unpublished data) with explicit CPU mode
+on macOS. A real arm64 Linux CPU smoke, using an earlier source snapshot whose
+physical engine was unchanged, ranked 434 Story County cycles, replayed 32 state
+members and produced five one-year scenarios in about 30 seconds with finite
+outputs. This is an execution check, not evidence of agronomic prediction skill.
+The latest-source Linux/Windows offline checks run in `.github/workflows/platforms.yml`;
+do not treat the older snapshot's test results as a clean run of the latest source.

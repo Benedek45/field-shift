@@ -2,7 +2,6 @@
 farmer form, session folders, background jobs and the comparison table. No Streamlit here."""
 
 import contextlib
-import fcntl
 import json
 import os
 import re
@@ -13,7 +12,9 @@ import time
 from datetime import UTC, datetime
 from pathlib import Path
 
+from fieldshift import locking
 from fieldshift.agent import chat, checks, farms, form, providers, report
+from fieldshift.app.worker_process import detached_options
 from fieldshift.sim.economics import ACRES_HA, PARTS
 
 REPO = Path(__file__).resolve().parents[3]
@@ -399,12 +400,12 @@ def _lock_held(session):
     path = Path(session) / ".job.lock"
     if not path.exists():
         return False
-    with open(path, "a") as stream:
+    with open(path, "a+b") as stream:
         try:
-            fcntl.flock(stream, fcntl.LOCK_EX | fcntl.LOCK_NB)
+            locking.acquire(stream, blocking=False)
         except BlockingIOError:
             return True
-        fcntl.flock(stream, fcntl.LOCK_UN)
+        locking.release(stream)
     return False
 
 
@@ -463,11 +464,11 @@ def spawn(session, kind, env=None):
     log.write(f"{datetime.now(UTC).isoformat(timespec='seconds')} launching {kind} job with {sys.executable}"
               f"{' (page-provided: ' + ', '.join(sorted(env)) + ')' if env else ''}\n")
     log.flush()
-    # Record the exit status even when the worker fails before writing job.json.
-    script = '"$0" -u -m fieldshift.app.advisor_worker "$1" "$2"; echo "worker exited with status $?"'
-    proc = subprocess.Popen(["/bin/sh", "-c", script, sys.executable, kind, str(session)], cwd=REPO,
-                            env={**os.environ, **(env or {})}, stdin=subprocess.DEVNULL, stdout=log,
-                            stderr=subprocess.STDOUT, start_new_session=True)
+    # A Python supervisor records early failures without requiring a host shell.
+    proc = subprocess.Popen([sys.executable, "-u", "-m", "fieldshift.app.worker_process", kind,
+                             str(Path(session).resolve())], cwd=REPO,
+                             env={**os.environ, **(env or {})}, stdin=subprocess.DEVNULL, stdout=log,
+                             stderr=subprocess.STDOUT, **detached_options())
     log.write(f"worker pid {proc.pid}\n")
     log.close()
 
@@ -483,16 +484,16 @@ def start_job(session, kind, launcher=None, env=None):
 @contextlib.contextmanager
 def job_lock(session):
     """Held by the worker for the whole job; the kernel releases it if the worker dies."""
-    stream = open(Path(session) / ".job.lock", "a")  # noqa: SIM115
+    stream = open(Path(session) / ".job.lock", "a+b")  # noqa: SIM115
     try:
-        fcntl.flock(stream, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        locking.acquire(stream, blocking=False)
     except BlockingIOError:
         stream.close()
         raise JobBusy("Another run of this session is active") from None
     try:
         yield
     finally:
-        fcntl.flock(stream, fcntl.LOCK_UN)
+        locking.release(stream)
         stream.close()
 
 
