@@ -1,5 +1,4 @@
 """Stand accounting contracts; synthetic weather is not field validation."""
-import os
 
 import numpy as np
 import pandas as pd
@@ -13,11 +12,6 @@ from fieldshift.sim.components import accelerator
 from fieldshift.sim.economics import ACRES_HA, ECON_FIELDS, context, reprice
 from fieldshift.sim.engine import ledger_pass, prepare, trajectories, water_pass
 from fieldshift.sim.traits import CATALOG
-
-gpu = pytest.mark.skipif(
-    not (os.environ.get("FIELDSHIFT_DEVICE", "").strip().lower() == "cpu"
-         or torch.backends.mps.is_available() or torch.cuda.is_available()),
-    reason="Select FIELDSHIFT_DEVICE=cpu or provide MPS/CUDA")
 
 
 def test_census_practice_short_tons_and_recent_suppressed_fallback(monkeypatch):
@@ -46,7 +40,6 @@ def test_market_is_area_depth_not_binary_presence():
     assert market_support("alfalfa",{"areas":{}}) == 0
 
 
-@gpu
 def test_one_stand_cash_event_not_production_plus_establishment():
     ctx = context({"adm_id":"US-48-303"},[CATALOG["alfalfa"]],[],None,True)
     fields = {k:torch.zeros(1,device=accelerator()) for k in ECON_FIELDS}
@@ -65,7 +58,6 @@ def test_one_stand_cash_event_not_production_plus_establishment():
     assert q["crops"][0]["establishment"]["fall"]["parts"]["seed"]["source"] == "farmer"
 
 
-@gpu
 def test_stand_lifecycle_cap_and_nitrogen_credit():
     # Deliberately controlled warm/dry weather, not an invented county observation.
     dates = pd.date_range("1998-01-01","2009-12-31")

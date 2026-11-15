@@ -2,7 +2,6 @@
 
 import json
 import math
-import os
 from pathlib import Path
 
 import pytest
@@ -12,13 +11,7 @@ from fieldshift.sim.components import accelerator
 from fieldshift.sim.forecast import validate
 from fieldshift.sim.state import PROTECTED_ASSETS, ROOT, kalman_update
 
-gpu = pytest.mark.skipif(
-    not (os.environ.get("FIELDSHIFT_DEVICE", "").strip().lower() == "cpu"
-         or torch.backends.mps.is_available() or torch.cuda.is_available()),
-    reason="Select FIELDSHIFT_DEVICE=cpu or provide MPS/CUDA")
 
-
-@gpu
 def test_scalar_square_root_update_has_known_kalman_mean_and_covariance():
     x = torch.tensor([[0.], [2.]], device=accelerator())
     out = kalman_update(x, x[:, 0], 2., 1.)
@@ -36,7 +29,6 @@ def test_forecast_rejects_invalid_envelope(payload):
         validate(payload)
 
 
-@gpu
 def test_grouped_ensrf_equals_scalar_update_per_group():
     from fieldshift.sim.hindcast import grouped_ensrf
 
@@ -50,7 +42,6 @@ def test_grouped_ensrf_equals_scalar_update_per_group():
         assert torch.allclose(out[i], ref, atol=1e-4)
 
 
-@gpu
 def test_crps_known_values():
     from fieldshift.sim.hindcast import crps
 
@@ -62,7 +53,6 @@ def test_crps_known_values():
     assert out.tolist() == pytest.approx([2., .5])
 
 
-@gpu
 def test_water_pass_chunks_match_single_pass_with_alfalfa_stands():
     import numpy as np
     import pandas as pd
@@ -134,7 +124,6 @@ def _assert_v25_result(old, new, path=""):
         assert old == new, (path, old, new)
 
 
-@gpu
 @pytest.mark.parametrize("name", ["story", "york", "lubbock"])
 def test_v25_default_simulate_and_scoreboard_regression(name, tmp_path):
     from fieldshift.agent import farms, scoreboard

@@ -1,5 +1,4 @@
 import math
-import os
 
 import pytest
 import torch
@@ -152,13 +151,6 @@ def _synthetic_site(years=(1999, 2000, 2001, 2002, 2003, 2004)):
     return {"daily": daily, "soil": soil, "planting": {}}
 
 
-needs_accelerator = pytest.mark.skipif(
-    not (os.environ.get("FIELDSHIFT_DEVICE", "").strip().lower() == "cpu"
-         or torch.backends.mps.is_available() or torch.cuda.is_available()),
-    reason="Select FIELDSHIFT_DEVICE=cpu or provide MPS/CUDA")
-
-
-@needs_accelerator
 def test_vectorised_calendar_matches_pandas_reference():
     import numpy as np
     import pandas as pd
@@ -211,7 +203,6 @@ def _simulate(rotations, cover=True, rain_change=0.):
     return prepared, traj, water, ledger, reference, (site, crops, covers, normals)
 
 
-@needs_accelerator
 def test_water_pass_closes_the_mass_balance():
     _prepared, _traj, water, _, _, (site, *_) = _simulate([((0, 1, 0, 1), 1, False)])
     capacity = site["soil"]["awc_mm_per_m"] * site["soil"]["profile_depth_m"]
@@ -221,7 +212,6 @@ def test_water_pass_closes_the_mass_balance():
     assert (water["water_mm"] >= 0).all() and (water["water_mm"] <= capacity + 1e-3).all()
 
 
-@needs_accelerator
 def test_cyclic_shifts_score_identically():
     rotations = [((0, 0, 1, 0), 0, False), ((0, 1, 0, 0), 0, False)]
     _, traj, _, ledger, _, _ = _simulate(rotations, cover=False)
@@ -232,7 +222,6 @@ def test_cyclic_shifts_score_identically():
         assert torch.allclose(a, b, rtol=1e-5, atol=1e-4), name
 
 
-@needs_accelerator
 def test_winter_cover_acts_through_the_ledgers():
     rotations = [((0, 1, 0, 1), 0, False), ((0, 1, 0, 1), 1, False)]
     _, traj, _water, ledger, _, (_, _crops, covers, _) = _simulate(rotations)
@@ -247,7 +236,6 @@ def test_winter_cover_acts_through_the_ledgers():
     assert mean("cover_cost_usd_ha", with_cover) == pytest.approx(covers[0].v("cost_usd_ha"), rel=1e-5)
 
 
-@needs_accelerator
 def test_zero_weather_edit_reproduces_baseline_exactly():
     from fieldshift.sim.engine import ledger_pass, prepare, water_pass
 
@@ -267,7 +255,6 @@ def test_zero_weather_edit_reproduces_baseline_exactly():
     assert float(dry["yield_relative"].mean()) < float(ledger["yield_relative"].mean())
 
 
-@needs_accelerator
 def test_monthly_nitrogen_mass_balance_and_nonnegative_stores():
     _, _, _, ledger, _, _ = _simulate([((0, 1, 0, 1), 1, False)])
     assert float(ledger["n_balance_error_kg_ha"].abs().max()) < .005
@@ -275,7 +262,6 @@ def test_monthly_nitrogen_mass_balance_and_nonnegative_stores():
     assert float(ledger["n_cover_uptake_kg_ha"].sum()) > 0
 
 
-@needs_accelerator
 def test_cover_failure_uses_species_frost_and_hardiness_traits():
     from fieldshift.sim.engine import prepare
     site = _synthetic_site()
@@ -288,7 +274,6 @@ def test_cover_failure_uses_species_frost_and_hardiness_traits():
     assert not bool(p["covers"]["alive"][:, 1:].any())
 
 
-@needs_accelerator
 def test_legume_cover_credit_reduces_applied_n_and_is_in_income():
     from fieldshift.sim.engine import ledger_pass
     p, tr, water, _, ref, (site, crops, covers, normals) = _simulate([((0, 1, 0, 1), 1, False)])
@@ -315,7 +300,6 @@ def test_nass_cotton_uses_upland_class_not_nonexistent_all_classes():
     assert list(_crop_rows(frame, "COTTON").class_desc) == ["UPLAND"]
 
 
-@needs_accelerator
 def test_pareto_selection_excludes_dominated_and_low_margin_candidates():
     from fieldshift.planner.search import comparison_pool
     rows = _table_rows()
@@ -329,7 +313,6 @@ def test_pareto_selection_excludes_dominated_and_low_margin_candidates():
     assert "pareto" not in rows[0]
 
 
-@needs_accelerator
 def test_rye_does_not_die_from_zero_autumn_gdd_or_calendar_padding():
     from fieldshift.sim.engine import prepare
     site = _synthetic_site()
@@ -351,7 +334,6 @@ def test_usdm_uses_cumulative_d2_without_double_counting():
     assert drought_summers(weekly).max_d2_area_pct.tolist() == [75., 0.]
 
 
-@needs_accelerator
 def test_diverse_cycle_gain_is_cited_trait_not_crop_identifier_logic():
     import numpy as np
 
@@ -386,7 +368,6 @@ def test_internal_unmet_n_demand_is_not_a_reported_or_scored_outcome():
     assert "n_shortage_kg_ha" not in METRICS
 
 
-@needs_accelerator
 def test_engine_uses_season_level_fao33_factor():
     _prepared, traj, water, _, _, (_, crops, _, _) = _simulate([((0, 1, 0, 1), 0, False)], cover=False)
     p = _prepared
@@ -401,7 +382,6 @@ def test_engine_uses_season_level_fao33_factor():
     assert torch.allclose(water["fao_main"], expected, atol=1e-5)
 
 
-@needs_accelerator
 def test_prism_rescaling_keeps_wet_days_and_conserves_step_totals(monkeypatch):
     import numpy as np
     import pandas as pd

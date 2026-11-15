@@ -19,6 +19,10 @@ cp .env.example .env    # then fill in your credentials
 ```
 
 Run code with `uv run python ...`, tests with `uv run pytest`, lint with `uv run ruff check`.
+The simulator and models automatically select CUDA, then Apple MPS, then CPU.
+No device setting is needed on a CPU-only machine. To force CPU even when a GPU
+is available, set `FIELDSHIFT_DEVICE=cpu` (`$env:FIELDSHIFT_DEVICE = "cpu"` in
+PowerShell). A GPU execution error is reported, not silently retried on CPU.
 
 ## Layout
 
@@ -38,8 +42,9 @@ uv run python -m fieldshift.agent.advise examples/farms/story-steady.json --out 
 
 Use a **fresh output folder** for each run. The command owns a temporary, random-token
 simulator service on a free port and closes it afterwards; it does not use or restart
-the development service. Local weather/model/soil/EO data and MPS/CUDA are required.
-Record-view template runs are offline. Outlook requires the Open-Meteo seasonal API.
+the development service. Local weather/model/soil/EO data are required; a GPU is optional.
+No recommendation is shown if the agent or its decision checks fail.
+Outlook requires the Open-Meteo seasonal API.
 
 ### Farmer form
 
@@ -375,7 +380,7 @@ uv run ruff check .
 The expanded modules are `data/crop_labels.py`, `model/expanded_data.py`,
 `model/probabilistic.py` and `model/expanded.py`. No new dependency is required
 beyond the first-round model dependencies. Neural code selects CUDA if available,
-otherwise MPS, and refuses CPU or MPS CPU fallback.
+otherwise MPS, otherwise CPU. It does not enable per-operation MPS CPU fallback.
 
 #### Labels, irrigation and physiology
 
@@ -617,7 +622,7 @@ uv run pytest
 uv run ruff check .
 ```
 
-Requires Apple MPS; neural training/inference explicitly refuses CPU fallback.
+Neural training/inference selects CUDA, then Apple MPS, then CPU automatically.
 PyArrow provides streaming CSV-to-Parquet caches, scikit-learn provides the two
 HistGradientBoosting baselines, and torch provides a five-seed batched MLP.
 The AdamW implementation keeps every moment tensor on MPS (torch's standard
@@ -743,7 +748,7 @@ uv run python -m fieldshift.planner.validate         # multi-county NASA/NASS + 
 uv run python -m fieldshift.planner.prices           # one-off: NASS prices received -> data/processed/planner/
 ```
 
-Uses an Apple MPS or CUDA device by default and never falls back to the CPU silently; set `FIELDSHIFT_DEVICE=cpu` to run on the CPU (Story County, full farm pipeline: about 12 s on an M5 Pro CPU against 15 s on its GPU). Story County, IA
+Uses CUDA, then Apple MPS, then CPU automatically; `FIELDSHIFT_DEVICE=cpu` optionally forces CPU (Story County, full farm pipeline: about 12 s on an M5 Pro CPU against 15 s on its GPU). Story County, IA
 (`US-19-169`) opens from the cache in a few seconds. Any other county in the NASA POWER archive is
 computed on demand and cached as compressed `.npz` arrays plus JSON under
 `data/processed/planner/`. The seven-crop search retains cyclically distinct rotations, optional
@@ -899,7 +904,7 @@ From the repository root:
 uv sync --locked
 docker build -t fieldshift-agent:oc2.3.0 vm
 docker run --rm --entrypoint opencode fieldshift-agent:oc2.3.0 --version
-export FIELDSHIFT_DEVICE=cpu   # explicit CPU operation on a server without CUDA
+# Optional: export FIELDSHIFT_DEVICE=cpu  # force CPU instead of automatic selection
 uv run streamlit run src/fieldshift/app/advisor.py --server.address 127.0.0.1
 ```
 

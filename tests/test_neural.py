@@ -1,5 +1,3 @@
-import os
-
 import numpy as np
 import pytest
 import torch
@@ -11,12 +9,6 @@ from fieldshift.model.neural import (
     predict_members,
     save_ensemble,
     train_ensemble,
-)
-
-pytestmark = pytest.mark.skipif(
-    not (os.environ.get("FIELDSHIFT_DEVICE") == "cpu" or
-         torch.backends.mps.is_available() or torch.cuda.is_available()),
-    reason="Requires an accelerator or explicit CPU mode",
 )
 
 

@@ -1,5 +1,3 @@
-import os
-
 import numpy as np
 import pandas as pd
 import pytest
@@ -21,11 +19,6 @@ from fieldshift.model.probabilistic import (
     train_response,
 )
 
-pytestmark = pytest.mark.skipif(
-    not (os.environ.get("FIELDSHIFT_DEVICE") == "cpu" or
-         torch.backends.mps.is_available() or torch.cuda.is_available()),
-    reason="Requires an accelerator or explicit CPU mode",
-)
 VARIABLES = ["tmin", "tmax", "tavg", "prec", "rad", "vpd", "et0", "cwb", "rsm"]
 
 

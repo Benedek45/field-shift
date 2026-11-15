@@ -16,7 +16,6 @@ jobs:
         os: [ubuntu-latest, windows-latest, macos-latest]
     runs-on: ${{ matrix.os }}
     env:
-      FIELDSHIFT_DEVICE: cpu
       PYTHONUTF8: "1"
     steps:
       - uses: actions/checkout@v4

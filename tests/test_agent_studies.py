@@ -1,9 +1,7 @@
 import json
-import os
 import threading
 
 import pytest
-import torch
 
 from fieldshift.agent import checks, evidence, farms, studies
 from fieldshift.agent.runtime import Runtime
@@ -125,10 +123,6 @@ def test_list_limit_grounded_by_several_quotes():
     assert checks.ground_limits(scalar, form) == ["no_new_equipment: missing exact quote from free_text"]
 
 
-@pytest.mark.skipif(
-    not (os.environ.get("FIELDSHIFT_DEVICE", "").strip().lower() == "cpu"
-         or torch.backends.mps.is_available() or torch.cuda.is_available()),
-    reason="Select FIELDSHIFT_DEVICE=cpu or provide MPS/CUDA")
 def test_studies_route(tmp_path):
     import http.client
     fid = farms.add({"adm_id": "US-19-169"}, tmp_path)

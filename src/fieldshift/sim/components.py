@@ -1,19 +1,14 @@
 """Pure ledgers. Inputs/outputs remain torch tensors on the caller's device."""
 
-import os
 from dataclasses import dataclass
 
 import torch
 
+from fieldshift.device import runtime_device
+
 
 def accelerator():
-    if os.environ.get("FIELDSHIFT_DEVICE", "").lower() == "cpu":
-        return torch.device("cpu")
-    if torch.cuda.is_available():
-        return torch.device("cuda")
-    if torch.backends.mps.is_available():
-        return torch.device("mps")
-    raise RuntimeError("The planner requires CUDA or Apple MPS; set FIELDSHIFT_DEVICE=cpu to run on the CPU.")
+    return runtime_device()
 
 
 @dataclass

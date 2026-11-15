@@ -1,21 +1,15 @@
 import http.client
 import json
-import os
 import threading
 
 import numpy as np
 import pandas as pd
 import pytest
-import torch
 
 from fieldshift.agent import farms, scoreboard
 from fieldshift.agent.runtime import InputError, Runtime
 from fieldshift.agent.service import make_server
 from fieldshift.planner import search
-
-ACCELERATOR = (os.environ.get("FIELDSHIFT_DEVICE", "").strip().lower() == "cpu"
-               or torch.backends.mps.is_available() or torch.cuda.is_available())
-requires_accelerator = pytest.mark.skipif(not ACCELERATOR, reason="Select FIELDSHIFT_DEVICE=cpu or provide MPS/CUDA")
 
 
 @pytest.fixture(scope="module")
@@ -44,7 +38,6 @@ def test_large_finite_weights_normalise_without_overflow():
     assert weights["income"] == .5
 
 
-@requires_accelerator
 def test_determinism_weights_and_limits_do_not_resimulate(context, monkeypatch):
     root, farm_id, runtime = context
     original = scoreboard.simulate_pool
@@ -77,7 +70,6 @@ def test_determinism_weights_and_limits_do_not_resimulate(context, monkeypatch):
     assert len(calls) == 1
 
 
-@requires_accelerator
 def test_hard_limits_and_existing_are_explicit(context):
     _, farm_id, runtime = context
     request = {"weights": {"income": 1}, "top": 40, "limits": {
@@ -108,7 +100,6 @@ def test_hard_limits_and_existing_are_explicit(context):
         runtime.scoreboard(farm_id, {"weights": {"income": 1}, "limits": {"require_crops": ["millet"]}})
 
 
-@requires_accelerator
 def test_published_crop_can_be_excluded_after_weather_makes_it_infeasible(context):
     _, farm_id, runtime = context
     with runtime.lock:
@@ -124,7 +115,6 @@ def test_published_crop_can_be_excluded_after_weather_makes_it_infeasible(contex
     assert all(s["crop"] != unavailable[0] for row in result["rows"] for s in row["rotation"])
 
 
-@requires_accelerator
 def test_constructed_tie_matches_existing_bootstrap_rule():
     raw = np.tile(np.linspace(5, 15, 10), 4)
     runs = np.zeros((3, 40, len(search.RUN_COLUMNS)), dtype=np.float32)
@@ -150,7 +140,6 @@ def test_constructed_tie_matches_existing_bootstrap_rule():
         assert row["tied_with_best"] == (best["score"] - row["score"] <= row["tie_tolerance"])
 
 
-@requires_accelerator
 def test_double_crop_scoreboard_row_is_executable(context):
     root, _, runtime = context
     farm_id = farms.add({"adm_id": "US-20-191"}, root)
@@ -171,7 +160,6 @@ def test_double_crop_scoreboard_row_is_executable(context):
     assert response["metrics"]["double_crop_yield_t_ha_yr"]["median"] > 0
 
 
-@requires_accelerator
 def test_scoreboard_applies_all_farm_overrides_like_simulate(context):
     root, _, runtime = context
     farm_id = farms.add({"adm_id": "US-19-169", "overrides": {
@@ -187,7 +175,6 @@ def test_scoreboard_applies_all_farm_overrides_like_simulate(context):
             simulated["metrics"][metric]["median"], abs=.01)
 
 
-@requires_accelerator
 def test_http_scoreboard_auth_validation_and_weights_help(context, tmp_path):
     _, farm_id, runtime = context
     token = "local-scoreboard-test"

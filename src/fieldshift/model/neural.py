@@ -1,4 +1,4 @@
-"""Five independently initialised MLPs, vectorised entirely on Apple MPS."""
+"""Five independently initialised MLPs, vectorised on the selected device."""
 
 from functools import lru_cache
 from itertools import pairwise
@@ -8,20 +8,16 @@ import numpy as np
 import torch
 from torch import nn
 
+from fieldshift.device import runtime_device
+
 
 def mps_device():
     if __import__("os").environ.get("PYTORCH_ENABLE_MPS_FALLBACK") == "1":
         raise RuntimeError("Disable PYTORCH_ENABLE_MPS_FALLBACK for auditable accelerator execution")
-    if __import__("os").environ.get("FIELDSHIFT_DEVICE", "").lower() == "cpu":
-        return torch.device("cpu")
-    if torch.cuda.is_available():
-        return torch.device("cuda")
-    if not torch.backends.mps.is_available():
-        raise RuntimeError("MPS or CUDA is required; set FIELDSHIFT_DEVICE=cpu to run on the CPU")
-    return torch.device("mps")
+    return runtime_device()
 
 
-# CUDA (e.g. Kaggle T4) first, then Apple MPS; never CPU.
+# CUDA first, then Apple MPS, then CPU; the old function name remains compatible.
 accelerator_device = mps_device
 
 

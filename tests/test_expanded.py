@@ -1,5 +1,4 @@
 import json
-import os
 
 import numpy as np
 import pandas as pd
@@ -163,11 +162,6 @@ def test_power_metadata_units_shape_and_complete_file(tmp_path, monkeypatch):
         weather_spec("power")
 
 
-@pytest.mark.skipif(
-    not (os.environ.get("FIELDSHIFT_DEVICE") == "cpu" or
-         torch.backends.mps.is_available() or torch.cuda.is_available()),
-    reason="Requires an accelerator or explicit CPU mode",
-)
 def test_heteroscedastic_training_and_calibration_device_residency(tmp_path):
     rng = np.random.default_rng(2026)
     data = pd.DataFrame({
@@ -196,11 +190,6 @@ def test_heteroscedastic_training_and_calibration_device_residency(tmp_path):
     torch.testing.assert_close(distribution(loaded, rows, calibration), expected)
 
 
-@pytest.mark.skipif(
-    not (os.environ.get("FIELDSHIFT_DEVICE") == "cpu" or
-         torch.backends.mps.is_available() or torch.cuda.is_available()),
-    reason="Requires an accelerator or explicit CPU mode",
-)
 def test_sequence_gathers_and_pools_on_selected_device(tmp_path):
     variables = ["tmin", "tmax", "tavg", "prec", "rad", "vpd", "et0", "cwb", "rsm"]
     path = tmp_path / "weather.f32"

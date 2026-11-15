@@ -562,6 +562,7 @@
 
 ## Linux/server portability (2026-11-15)
 
+- Device-selection instructions in this historical section are superseded by "Automatic CPU selection" below.
 - Public checkout only: `field-shift`; do not transfer private history or credentials from `nasa-farming`.
   Inference on a CPU server requires `FIELDSHIFT_DEVICE=cpu`, never a silent accelerator fallback.
   `model.probabilistic.synchronize` synchronizes CUDA/MPS only, not CPU.
@@ -602,3 +603,17 @@
   amd64 Docker build + non-root pinned CLI check passed. The 69 skips require unpublished data/private fixtures.
   Native Windows Docker and a paid-provider episode are still not validated. Deprecation notices for the
   Actions Node runtime and runner-image migration are warnings, not test failures.
+
+## Automatic CPU selection (user request, 2026-11-15)
+
+- `device.runtime_device()` is shared by `sim.components.accelerator` and
+  `model.neural.accelerator_device`: default CUDA -> Apple MPS -> CPU. `FIELDSHIFT_DEVICE=cpu`
+  still forces CPU. No environment variable is required on CPU-only Windows/Linux.
+  This chooses a device before computation; GPU runtime errors are never caught and retried on CPU.
+  The separate `PYTORCH_ENABLE_MPS_FALLBACK=1` prohibition in the neural helper remains.
+- Removed obsolete GPU-availability test skips so plain `uv run pytest` exercises synthetic model/simulator
+  tests on CPU too. Tests requiring unpublished data/private fixtures still skip without those assets.
+  CI no longer supplies a device override: each native OS runner tests automatic selection.
+- The friend's 14 failures all came from the former strict GPU selectors, not Windows-specific math errors.
+  Regression coverage now tests shared device precedence and real training with both GPU probes false and
+  no device override. A full CPU-only simulated-availability run passed 355 tests with 69 data/fixture skips.
